@@ -10,9 +10,8 @@ export enum ButtonKey{
 }
 
 export abstract class ButtonBase{
-
     key: ButtonKey;
-
+    
     constructor(key: ButtonKey) {
         this.key = key;
     }

@@ -1,13 +1,12 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, TextChannel, ThreadChannel } from "discord.js";
 import { average, createID } from "../utils";
 import { Combatant } from "./Combatant";
-import { ElementalType, randomElement } from "./enums/ElementalType";
+import { ElementalType, nextElement, randomElement } from "./enums/ElementalType";
 import { Player } from "./Player";
 import { CombatLocation } from "./enums/Location";
 import { Monster } from "./monsters/Monster";
 import { BattleAgain } from "../buttons/BattleAgain";
 import { DeclineBattleAgain } from "../buttons/DeclineBattleAgain";
-
 
 export class Battle {
 
@@ -35,6 +34,7 @@ export class Battle {
         for (let combatant of combatants) {
             combatant.battleID = this.id;
             combatant.bp = 0;
+            combatant.blockMeter = 0;
         }
         this.turn = 0;
         this.bonusEXP = 0;
@@ -52,6 +52,7 @@ export class Battle {
             combatant.battleID = this.id;
             combatant.bp = 0;
             combatant.stats.HP = combatant.stats.maxHP;
+            combatant.blockMeter = 0;
         }
         this.turn = 0;
         this.bonusEXP = 0;
@@ -126,13 +127,11 @@ export class Battle {
         }
 
         if (!this.hasPlayers()) {
-            console.log(actionReport);
             actionReport += `Battle lost.\n`;
             this.battleEnd(actionReport);
             return;
         }
         else if (!this.hasMonsters()) {
-            console.log(actionReport);
             actionReport += `All enemies defeated.\n`;
             this.battleLost = false;
             this.battleEnd(actionReport);
@@ -143,7 +142,7 @@ export class Battle {
             if (combatant.actions > 0) {
                 this.currentAction = combatant;
                 if (combatant instanceof Player) {
-                    this.burst = randomElement();
+                    this.burst = nextElement(this.burst);
                     this.playerTurn(combatant);
                     return;
                 }
@@ -206,16 +205,16 @@ export class Battle {
 
         this.currentActionOwner = player;
         this.currentTarget = -1;
-        let turnColor = 0x0066cc;
+        let turnColor = 26316;
 
-        if(player.currentJob.jobElement  == this.burst){
-            turnColor = 0xFFD700;
+        if (player.mainJob.jobElement == this.burst) {
+            turnColor = 16766720;
         }
 
         let battleEmbed = new EmbedBuilder()
             .setColor(turnColor)
             .setTitle(`▶️ ${player.name}`)
-            .setDescription(`${player.stats.HP}/${player.stats.maxHP} HP | ${player.bp} BP\nElemental Field: ${this.burst}`);
+            .setDescription(`${player.stats.HP}/${player.stats.maxHP} HP | ${player.bp} BP\nElemental Field:  ${this.burst}\nBlock: ${player.blockMeter}/200`);
 
         for (let monster of this.getMonsters()) {
             battleEmbed.addFields({ name: `${monster.name}`, value: `${monster.stats.HP}/${monster.stats.maxHP} HP`, inline: true });
@@ -247,15 +246,22 @@ export class Battle {
         buttons = [];
         for (let skill of player.generalSkills) {
             buttons.push(new ButtonBuilder()
-                .setCustomId(skill)
-                .setLabel(skill)
+                .setCustomId(skill.name)
+                .setLabel(skill.name)
                 .setStyle(ButtonStyle.Primary));
         }
 
-        for (let skill of player.equippedSkills) {
+        for (let skill of player.mainJob.skills) {
             buttons.push(new ButtonBuilder()
-                .setCustomId(skill)
-                .setLabel(skill)
+                .setCustomId(skill.name)
+                .setLabel(skill.name)
+                .setStyle(ButtonStyle.Danger));
+        }
+
+        for (let skill of player.subJob.skills) {
+            buttons.push(new ButtonBuilder()
+                .setCustomId(skill.name)
+                .setLabel(skill.name)
                 .setStyle(ButtonStyle.Danger));
         }
 

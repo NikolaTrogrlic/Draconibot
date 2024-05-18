@@ -1,14 +1,5 @@
-import {
-  ButtonBuilder,
-  ButtonInteraction,
-  ButtonStyle,
-  CacheType,
-} from "discord.js";
-import { Globals } from "../globals";
-import { ButtonBase, ButtonKey } from "./ButtonBase";
-import { Player } from "../models/Player";
-import { Skill } from "../models/skills/Skill";
-import { Skills } from "../models/skills/Skills";
+import { ButtonInteraction } from "discord.js";
+import { Globals } from "../globals"; 
 
 export class SkillButton {
   static async execute(
@@ -24,36 +15,21 @@ export class SkillButton {
           battle.currentTarget = 0;
         }
 
-        if (player.generalSkills.findIndex((x) => x == skillName) == -1) {
-          if (player.equippedSkills.findIndex((x) => x == skillName) == -1) {
+        let skill = player.generalSkills.find((x) => x.name == skillName);
+
+        if (!skill) {
+          let skill = player.mainJob.skills.find((x) => x.name == skillName);
+
+          if (!skill) {
+            skill = player.subJob.skills.find((x) => x.name == skillName);
+          }
+
+          if (!skill) {
             interaction.reply({
               content: `${skillName} not found among equipped skills. This is probbaly the result of an error.`,
               ephemeral: true,
             });
           } else {
-            let skill = Skills.jobSkills.find((x) => x.name == skillName);
-            if (skill) {
-              if (player.bp > skill?.bpCost) {
-                interaction.reply({
-                  content: `Using ${skillName} on target ${
-                    battle.currentTarget + 1
-                  }`,
-                  ephemeral: true,
-                });
-                battle.currentActionOwner = undefined;
-                skill.use(player, battle);
-                battle.currentTarget = -1;
-              } else {
-                interaction.reply({
-                  content: `Not enough bp to perform skill. BP COST: ${skill.bpCost}`,
-                  ephemeral: true,
-                });
-              }
-            }
-          }
-        } else {
-          let skill = Skills.generalSkills.find((x) => x.name == skillName);
-          if (skill) {
             if (player.bp > skill?.bpCost) {
               interaction.reply({
                 content: `Using ${skillName} on target ${
@@ -71,6 +47,23 @@ export class SkillButton {
               });
             }
           }
+        } else {
+          if (player.bp > skill?.bpCost) {
+            interaction.reply({
+              content: `Using ${skillName} on target ${
+                battle.currentTarget + 1
+              }`,
+              ephemeral: true,
+            });
+            battle.currentActionOwner = undefined;
+            skill.use(player, battle);
+            battle.currentTarget = -1;
+          } else {
+            interaction.reply({
+              content: `Not enough bp to perform skill. BP COST: ${skill.bpCost}`,
+              ephemeral: true,
+            });
+          }
         }
       } else {
         interaction.reply({
@@ -84,28 +77,6 @@ export class SkillButton {
         content: "Must create a character first to perform actions in battle.",
         ephemeral: true,
       });
-    }
-  }
-
-  static canPlayerUseSkill(db: Globals, player: Player, skill: Skill): boolean {
-    let battle = db.getPlayerBattle(player);
-
-    if (
-      battle &&
-      battle.currentActionOwner == player &&
-      player.bp - skill.bpCost > 0
-    ) {
-      if (player.generalSkills.findIndex((x) => x == skill.name) == -1) {
-        if (player.equippedSkills.findIndex((x) => x == skill.name) == -1) {
-          return false;
-        } else {
-          return true;
-        }
-      } else {
-        return true;
-      }
-    } else {
-      return false;
     }
   }
 }

@@ -47,6 +47,12 @@ export class BattleAgain extends ButtonBase {
                }
             }
          }
+         else{
+          let index = previousBattle.combatants.findIndex(x => x instanceof Player && x.userID == player.userID);
+          if(index == -1){
+            previousBattle.combatants.push(player);
+          }
+         }
 
         await interaction.reply("Starting battle...");
         previousBattle.startSecondBattle(

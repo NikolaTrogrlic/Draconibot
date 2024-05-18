@@ -10,7 +10,6 @@ export class TargetButton{
           let battle = globals.getPlayerBattle(player);
           if(battle && battle.currentActionOwner == player){
             battle.updateTarget(target)
-            console.log(battle.currentTarget);
             interaction.reply({content: `Changed target on next skill use to ${target + 1} .`, ephemeral: true});
           }
           else{

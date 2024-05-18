@@ -1,34 +1,32 @@
 import { Monster } from "./Monster";
 import { Slime } from "./plains/Slime";
-import { randomNumberFromOneTo, randomNumberFromZeroTo } from "../../utils";
 import { CombatLocation } from "../enums/Location";
 import { GoldenSlime } from "./plains/GoldenSlime";
+import { getRandomPercent } from "../../random";
 
 export class Monsters{
 
     static createPlainsMonster(): Monster{
         
-        const randomNumber = randomNumberFromZeroTo(10);
+        const randomNumber = getRandomPercent();
 
-        switch(randomNumber){
-            case 0:{
-                return new GoldenSlime();
-            }
-            default:
-                return new Slime();
+        if(randomNumber < 20){
+            return new GoldenSlime(); 
+        }
+        else{
+            return new Slime(); 
         }
     }
 
     static createDesertMonster(): Monster{
         
-        const randomNumber = randomNumberFromZeroTo(6);
+        const randomNumber = getRandomPercent();
 
-        switch(randomNumber){
-            case 0:{
-                return new GoldenSlime();
-            }
-            default:
-                return new Slime();
+        if(randomNumber < 20){
+            return new GoldenSlime(); 
+        }
+        else{
+            return new Slime(); 
         }
     }
 
@@ -42,12 +40,21 @@ export class Monsters{
     }
 
     static getMonstersForLocation(location: CombatLocation): Monster[]{
-        const randomNumber = randomNumberFromOneTo(3);
-        console.log("Generating monsters:" + randomNumber)
+
+        const randomPercent = getRandomPercent();
+        let amountOfMonsters = 1;
+
+        if(randomPercent < 20){
+            amountOfMonsters = 3;
+        }
+        else if(randomPercent < 60){
+            amountOfMonsters = 2;
+        }
+
         let monsters = [];
-
-        for(let i=0;i < randomNumber;i++){
-
+            
+        for(let i=0;i < amountOfMonsters;i++){
+    
             switch(location){
                 case CombatLocation.Plains:
                     monsters.push(this.createPlainsMonster());

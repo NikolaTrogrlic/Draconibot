@@ -1,22 +1,31 @@
 import { Stats } from "./Stats";
 import { ElementalType } from "./enums/ElementalType";
 
+export enum BlockType{
+    Armor = 0,
+    Resistance = 1,
+    None = 3
+}
+
 export class Combatant{
 
     name: string;
+    baseStats: Stats;
     stats: Stats;
     actions: number;
     bp: number;
     maxBP: number;
     battleID?: string;
+    blockMeter = 0;
     isDefending: boolean;
     weaknesses: ElementalType[] = [];
     resistances: ElementalType[] = [];
     
-    constructor(name: string,stats: Stats,battleID: string | undefined, bp: number = 1,actions: number = 1){
+    constructor(name: string,baseStats: Stats,battleID: string | undefined, bp: number = 1,actions: number = 1){
         this.name = name;
         this.battleID = battleID;
-        this.stats = stats;
+        this.stats = baseStats;
+        this.baseStats = baseStats;
         this.actions = actions;
         this.bp = bp;
         this.maxBP = 3;
@@ -30,29 +39,49 @@ export class Combatant{
         }
     }
 
-    takeDamage(amount: number, damageReduction: number = this.stats.armor, damageType: ElementalType = ElementalType.Physical): string{
+    takeDamage(amount: number, blockType = BlockType.Armor,damageType: ElementalType = ElementalType.Physical): string{
 
-        amount = this.applyWeaknessesAndResistances(amount, damageType);
-        let damage = Math.round(amount - (amount * (damageReduction/100)));
+        let message = "";
+        
+        if(this.blockMeter >= 200){
+            this.blockMeter = 0;
+            message += `**[BLOCKED]** Damage blocked by ${this.name}`;
+        }
+        else{
 
-        if(this.isDefending){
-            damage = Math.round(damage / 2);
-        }
-        if(damage <= 0){
-            damage = 1;
-        }
-        this.stats.HP -= damage;
-        return `Deals ${damage} damage to ${this.name}. \n`
-    }
+            if(this.resistances.findIndex(x => x == damageType) != -1){
+                amount = Math.floor(amount * 0.8);
+                message += "**[RESIST]**";
+            }
+            else if(this.weaknesses.findIndex(x => x == damageType) != -1){
+                amount = Math.floor(amount * 1.2);
+                message += "**[WEAKNESS HIT]**";
+            }
+    
+            if(this.isDefending){
+                amount = Math.round(amount / 2);
+            }
+            else if(amount <= 0){
+                amount = 1;
+            }
+    
+            this.stats.HP -= amount;
 
-    applyWeaknessesAndResistances(damage: number,damageType: ElementalType): number{
-        if(this.weaknesses.findIndex(x => x == damageType) != -1){
-            return Math.floor(damage * 1.2);
+            if(blockType == BlockType.Armor){
+                this.blockMeter += this.stats.armor;
+            }
+            else if(blockType == BlockType.Resistance){
+                this.blockMeter += this.stats.resistance;
+            }
+
+            if(this.blockMeter > 200){
+                this.blockMeter = 200;
+            }
+    
+            message += `Deals ${amount} damage to ${this.name}. \n`;
         }
-        if(this.weaknesses.findIndex(x => x == damageType) != -1){
-            return Math.floor(damage * 0.8);
-        }
-        return damage;
+
+        return message;
     }
 
     heal(amount: number){

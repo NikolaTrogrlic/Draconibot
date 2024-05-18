@@ -1,14 +1,13 @@
 import { CommandInteraction, SlashCommandBuilder, TextBasedChannelMixin, TextChannel } from "discord.js";
 import { Globals } from "../globals";
-import { Player } from "../models/Player";
 import { Battle } from "../models/Battle";
 import { Monsters } from "../models/monsters/Monsters";
 import { Monster } from "../models/monsters/Monster";
-import { randomNumberFromOneTo} from "../utils";
+import { getRandomPercent } from "../random";
 
 export function makeMonsters(): Monster[]{
     const monsters: Monster[] = [];
-    for(let i = 0; i < randomNumberFromOneTo(3);i++){
+    for(let i = 0; i < (getRandomPercent() % 3);i++){
         monsters.push(Monsters.createPlainsMonster());
     }
 

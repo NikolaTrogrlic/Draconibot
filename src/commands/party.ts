@@ -97,7 +97,7 @@ function partyInfo(interaction: CommandInteraction, globals: Globals, player: Pl
     let maxHPTotal = 0;
 
     for(const member of party.partyMembers){
-      fields.push({ name: bold(member.name), value: `HP: ${member.stats.HP}/${member.stats.maxHP} | Class: ${member.currentJob.name}` })
+      fields.push({ name: bold(member.name), value: `HP: ${member.stats.HP}/${member.stats.maxHP} | Class: ${member.mainJob.name}` })
       hpTotal += member.stats.HP;
       maxHPTotal += member.stats.maxHP;
     }

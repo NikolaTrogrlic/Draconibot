@@ -27,7 +27,6 @@ export abstract class Skill{
 
     getTarget(user: Player, battle: Battle): Combatant[]
     {
-        console.log(this.target);
         switch(this.target){
             case TargetType.AllEnemies:
                 return battle.getMonsters();

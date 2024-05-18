@@ -7,13 +7,3 @@ export function average(values: number[]): number{
     const avg = (sum / values.length) || 0;
     return Math.round(avg);
 }
-
-export function randomNumberFromZeroTo(number: number){
-
-    return Math.floor(Math.random() * (number+1));
-}
-
-export function randomNumberFromOneTo(number: number){
-
-    return Math.floor(Math.random() * (number)) + 1;
-}

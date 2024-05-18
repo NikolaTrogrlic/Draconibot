@@ -2,159 +2,221 @@ import { JobName } from "./enums/JobName";
 import { Job } from "./jobs/Job";
 import { Combatant } from "./Combatant";
 import { Stats } from "./Stats";
-import { Passive } from "./passives/Passive";
+import { Passive } from "./Passive";
 import { Jobs } from "./jobs/Jobs";
-import { SkillName } from "./enums/SkillName";
+import { Skill } from "./skills/Skill";
+import { AttackAction } from "./skills/general/AttackAction";
+import { DefendAction } from "./skills/general/DefendAction";
+import { Freelancer } from "./jobs/Freelancer";
+import { Knight } from "./jobs/Knight";
 
-export class Player extends Combatant{
+export class Player extends Combatant {
+  constructor(name: string, id: string) {
+    super(
+      name,
+      new Stats({
+        HP: 100,
+        armor: 5,
+        resistance: 0,
+        pAtk: 10,
+        mAtk: 10,
+        speed: 10,
+        luck: 0,
+      }),
+      undefined
+    );
 
-    constructor(name: string, id: string){
+    this.userID = id;
+    this.jobs = Jobs.getJobsForLevel(1);
+    this.changeMainJob(JobName.Freelancer);
+    this.changeSubJob(JobName.Knight);
+  }
 
-        super(name,new Stats({HP:100,armor:10,resistance:0,pAtk:10,mAtk:10,speed:10, luck:0}), undefined)
-        this.userID = id;
-        this.jobs = Jobs.getJobsForLevel(1);
-        this.currentJob = this.jobs.find(job => job.name == JobName.Freelancer)!
-        this.equippedSkills = [];
-        this.generalSkills = [SkillName.Attack, SkillName.Defend];
+  level: number = 1;
+  exp: number = 0;
+
+  mainJob: Job = new Freelancer();
+  subJob: Job = new Knight();
+  jobs: Job[];
+  generalSkills: Skill[] = [new AttackAction(), new DefendAction()];
+
+  unlockedPassives: Passive[] = [];
+  equippedPassives: Passive[] = [];
+
+  partyID?: string;
+  userID: string = "";
+
+  updateStats(baseStats: Stats, classPercantageModifiers: Stats) {
+    this.stats.maxHP =
+      baseStats.maxHP +
+      Math.round(baseStats.maxHP * (classPercantageModifiers.maxHP / 100));
+    this.stats.armor = baseStats.armor + classPercantageModifiers.armor;
+    this.stats.resistance =
+      baseStats.resistance + classPercantageModifiers.resistance;
+
+    this.stats.pAtk =
+      baseStats.pAtk +
+      Math.round(baseStats.pAtk * (classPercantageModifiers.pAtk / 100));
+    console.log(this.stats.pAtk);
+    this.stats.mAtk =
+      baseStats.mAtk +
+      Math.round(baseStats.mAtk * (classPercantageModifiers.mAtk / 100));
+    this.stats.speed =
+      baseStats.speed +
+      Math.round(baseStats.speed * (classPercantageModifiers.speed / 100));
+    this.stats.luck =
+      baseStats.luck +
+      Math.round(baseStats.luck * (classPercantageModifiers.luck / 100));
+
+    if (this.stats.HP >= this.stats.maxHP) {
+      this.stats.HP = this.stats.maxHP;
     }
 
-    level: number = 1;
-    exp: number = 0;
+    return this.stats;
+  }
 
-    currentJob: Job;
-    jobs: Job[];
-    equippedSkills: SkillName[];
-    generalSkills: SkillName[];
-    equippedPassives: Passive[] = [];
+  changeMainJob(selectedClass: JobName): string {
+    const job = this.jobs.find((x) => x.name == selectedClass);
+    if (job) {
+      this.updateStats(this.baseStats, job.statModifiers);
+      if (this.subJob.name != selectedClass) {
+        this.mainJob = job;
+        this.mainJob.refreshSkills();
+        return `Job changed to ${selectedClass}`;
+      } else {
+        this.subJob = this.mainJob;
+        this.mainJob = job;
+        this.mainJob.refreshSkills();
+        return `Switched main job to ${this.mainJob.name} and subjob to ${this.subJob.name}.`;
+      }
+    } else {
+      return "Job not found or is not unlocked.";
+    }
+  }
 
-    baseStats: Stats = new Stats({HP:100,armor:10,resistance:0,pAtk:10,mAtk:10,speed:10, luck:0});
+  changeSubJob(selectedClass: JobName): string {
+    const job = this.jobs.find((x) => x.name == selectedClass);
+    if (job) {
+      if (this.mainJob.name != selectedClass) {
+        this.subJob = job;
+        this.subJob.refreshSkills();
+        return `Sub job changed to ${selectedClass}`;
+      } else {
+        this.mainJob = this.subJob;
+        this.subJob = job;
+        this.subJob.refreshSkills();
+        return `Switched sub job to ${this.subJob.name} and main job to ${this.mainJob.name}.`;
+      }
+    } else {
+      return "Job not found or is not unlocked.";
+    }
+  }
 
-    partyID?: string;
-    userID: string =  "";
+  giveExp(battleLevel: number, creaturesFought: number, bonusExp: number = 0) {
+    let exp = 0;
+    let jobExp = 0;
 
-    updateStats(baseStats: Stats, classPercantageModifiers:Stats){
-
-        this.stats.maxHP = Math.round(baseStats.maxHP + (baseStats.maxHP * (classPercantageModifiers.maxHP/100)));
-        this.stats.armor = Math.round(baseStats.armor + (baseStats.armor * (classPercantageModifiers.armor/100)));
-        this.stats.resistance = Math.round(baseStats.resistance + (baseStats.resistance * (classPercantageModifiers.resistance/100)));
-        this.stats.pAtk = Math.round(baseStats.pAtk + (baseStats.pAtk * (classPercantageModifiers.pAtk/100)));
-        this.stats.mAtk = Math.round(baseStats.mAtk + (baseStats.mAtk * (classPercantageModifiers.mAtk/100)));
-        this.stats.speed = Math.round(baseStats.speed + (baseStats.speed * (classPercantageModifiers.speed/100)));
-        this.stats.luck = Math.round(baseStats.luck + (baseStats.luck * (classPercantageModifiers.luck/100)));
-
-        if(this.stats.HP >= this.stats.maxHP){
-            this.stats.HP = this.stats.maxHP;
-        }
-    
-        return this.stats;
+    if (creaturesFought > 4) {
+      creaturesFought = 4;
     }
 
-    changeClasses(selectedClass: JobName){
-        const job = this.jobs.find(x => x.name == selectedClass);
-        if(job){
-            const previousInfo = this.jobs.find(x => x.name == selectedClass);
-                if(!previousInfo){
-                    this.jobs.push(job);
-                }
-                this.updateStats(this.baseStats, job.statModifiers);
-                this.currentJob = job;
+    exp += bonusExp;
 
-                return `Job changed to ${selectedClass}`;
+    if (battleLevel - 2 <= this.level && this.level <= battleLevel + 2) {
+      exp += 5;
+      jobExp += 10;
+    } else if (this.level < battleLevel - 2) {
+      exp += 10;
+      jobExp += 15;
+    } else if (this.level > battleLevel + 2) {
+      if (this.level > battleLevel + 5) {
+        exp += 1;
+        if (creaturesFought > 1) {
+          creaturesFought = 1;
         }
-        else{
-            return "Job not found or is not unlocked.";
-        }
+        jobExp += 2;
+      } else {
+        exp += 5;
+        jobExp += 5;
+      }
     }
 
-    giveExp(battleLevel: number, creaturesFought: number, bonusExp: number = 0){
+    exp *= creaturesFought;
+    jobExp *= creaturesFought;
 
-        let exp = 0;
-        let jobExp = 0;
+    this.exp += exp;
+    this.mainJob.exp += jobExp;
 
-        if(creaturesFought > 4){
-            creaturesFought = 4;
-        }
+    const levelUpTxt = this.checkLevelUp();
+    const expGivenTxt = `${this.name} earned ${exp} exp and ${jobExp} jp.\n`;
 
-        exp += bonusExp;
+    return expGivenTxt + levelUpTxt;
+  }
 
-        if(battleLevel - 2 <= this.level && this.level <= battleLevel + 2  ){
-            exp += 5;
-            jobExp += 10;
-        }
-        else if(this.level < battleLevel - 2){
-            exp += 10;
-            jobExp += 15;
-        }
-        else if(this.level > battleLevel + 2){
-            if(this.level > battleLevel + 5){
-                exp += 1;
-                if(creaturesFought > 1){
-                    creaturesFought = 1;
-                }
-                jobExp += 2;
-            }
-            else{
-                exp += 5;
-                jobExp += 5;
-            }
-        }
+  checkLevelUp(): string {
+    let leveledUp = false;
+    let result: string = "";
+    let initialLevel = this.level;
 
-        exp *= creaturesFought;
-        jobExp *= creaturesFought;
+    while (this.exp > 100) {
+      this.level++;
+      this.baseStats.HP += 25;
+      this.baseStats.mAtk += 5;
+      this.baseStats.pAtk += 5;
+      this.baseStats.speed += 1;
 
-        this.exp += exp;
-        this.currentJob.exp += jobExp;
-
-        const levelUpTxt = this.checkLevelUp();
-        const expGivenTxt = `${this.name} earned ${exp} exp and ${jobExp} jp.\n`;
-
-        return expGivenTxt + levelUpTxt;
-    };
-
-    checkLevelUp(): string{
-        
-        let leveledUp = false;
-        let result: string = "";
-        let initialLevel = this.level;
-
-        while(this.exp > 100){
-            this.level++;
-            this.baseStats.HP += 10 + Math.floor(Math.random() * 5);
-            this.baseStats.mAtk += 5 + Math.floor(Math.random() * 5);
-            this.baseStats.pAtk += 5 + Math.floor(Math.random() * 5);
-            this.baseStats.speed += Math.floor(Math.random() * 3);
-            if(this.level % 5 == 0){
-                if(this.baseStats.armor < 30){
-                    this.baseStats.armor += 1 + Math.floor(Math.random() * 2);
-                }
-                if(this.baseStats.resistance < 30){
-                    this.baseStats.resistance += 1 + Math.floor(Math.random() * 2);
-                }
-                this.baseStats.luck += 1;
-            }
-            this.exp -= 100;
-            leveledUp = true;
-            this.updateStats(this.baseStats, this.currentJob.statModifiers)
-        }
-
-        if(leveledUp){
-            result += ` -CHARACTER LEVEL: ${initialLevel} > ${this.level}\n`
-        }
-
-        leveledUp = false;
-        initialLevel = this.currentJob.level;
-
-        while(this.currentJob.exp > 100){
-            this.currentJob.level++;
-            this.currentJob.exp -= 100;
-
-            leveledUp = true;
-        }
-
-        if(leveledUp){
-            result += ` -${this.currentJob.name.toUpperCase()} LEVEL ${initialLevel} > ${this.currentJob.level}\n`
-        }
-
-        return result;
+      if (this.level % 5 == 0) {
+        this.baseStats.luck += 1;
+      }
+      this.exp -= 100;
+      leveledUp = true;
+      this.updateStats(this.baseStats, this.mainJob.statModifiers);
     }
+
+    if (leveledUp) {
+      result += ` -CHARACTER LEVEL: ${initialLevel} > ${this.level}\n`;
+    }
+
+    leveledUp = false;
+    if (this.mainJob.level < 10) {
+      initialLevel = this.mainJob.level;
+
+      let learntMessage = "";
+
+      while (this.mainJob.exp > 100) {
+        this.mainJob.level++;
+        this.mainJob.exp -= 100;
+        let skills = this.mainJob.getUnlockedSkills();
+        for (let skill of skills) {
+          let index = this.mainJob.skills.findIndex(
+            (x) => x.name == skill.name
+          );
+          if (index == -1 && skill) {
+            learntMessage += `**Learnt skill**: ${skill.name}\n`;
+            this.mainJob.skills.push(skill);
+          }
+        }
+        let passives = this.mainJob.getUnlockedPassives();
+        for (let jobPassive of passives) {
+          let index = this.unlockedPassives.findIndex(
+            (x) => x.name == jobPassive.name
+          );
+          if (index == -1 && jobPassive) {
+            learntMessage += `**Learnt passive**: ${jobPassive.name}\n`;
+            this.unlockedPassives.push(jobPassive);
+          }
+        }
+        leveledUp = true;
+      }
+
+      if (leveledUp) {
+        result +=
+          ` -${this.mainJob.name.toUpperCase()} LEVEL ${initialLevel} > ${
+            this.mainJob.level
+          }\n` + learntMessage;
+      }
+    }
+
+    return result;
+  }
 }

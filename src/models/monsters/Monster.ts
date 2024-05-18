@@ -1,8 +1,7 @@
-import { randomNumberFromOneTo } from "../../utils";
+import { getRandomPercent } from "../../random";
 import { Battle } from "../Battle";
 import { Combatant } from "../Combatant";
 import { Stats } from "../Stats";
-
 
 export abstract class Monster extends Combatant{
 
@@ -20,19 +19,14 @@ export abstract class Monster extends Combatant{
     attackRandomPlayer(battle: Battle): string{
 
         const players = battle.getPlayers();
-        const targetedPlayer = players[Math.floor(Math.random() * players.length)];
+        const targetedPlayer = players[getRandomPercent() % players.length];
         const actionReport = targetedPlayer.takeDamage(this.stats.pAtk);
 
         return actionReport;
     }
 
     isLucky(): boolean{
-        if(randomNumberFromOneTo(100) < this.stats.luck){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return getRandomPercent() < this.stats.luck;
     }
 
 
