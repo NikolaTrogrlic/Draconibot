@@ -10,7 +10,7 @@ export class Slime extends Monster{
       this.weaknesses = [ElementalType.Fire]
    }
 
-   performCombatTurn(battle: Battle): string {
-      return this.attackRandomPlayer(battle);
+   performCombatTurn(battle: Battle): string[] {
+      return [this.attackRandomPlayer(battle)];
    }
 }

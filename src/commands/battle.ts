@@ -32,7 +32,8 @@ export const data = new SlashCommandBuilder()
   
     if(player){
         if(interaction.channel && (interaction.channel instanceof TextChannel)){
-            await interaction.reply("Starting battle...");
+            const reply = await interaction.reply("Starting battle...");
+            setTimeout(() => reply.delete(), 3000);
             let location = Monsters.getLocationForLevel(player.level);
             
             if(player.partyID){

@@ -9,10 +9,8 @@ export class DefendAction extends Skill{
    target: TargetType = TargetType.Self;
    bpCost: number = 0;
    
-   skillEffect(user: Player, battle: Battle): string{
-      
+   skillEffect(user: Player, battle: Battle): string[]{
       user.isDefending = true;
-
-      return "Defends.";
+      return ["Defends."];
    }
 }

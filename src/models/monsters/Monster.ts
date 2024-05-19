@@ -14,7 +14,7 @@ export abstract class Monster extends Combatant{
         this.level = level;
     }
 
-    abstract performCombatTurn(battle: Battle): string;
+    abstract performCombatTurn(battle: Battle): string[];
 
     attackRandomPlayer(battle: Battle): string{
 
@@ -28,8 +28,6 @@ export abstract class Monster extends Combatant{
     isLucky(): boolean{
         return getRandomPercent() < this.stats.luck;
     }
-
-
 
 
 }

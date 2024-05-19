@@ -1,5 +1,8 @@
 export enum PassiveName{
-    Determination = "Determination",
+    Lucky = "Lucky",
+    EarlyBird = "Early Bird",
+    NightShift = "Night Shift",
+    Commute = "Commute",
     Protect = "Protect",
     Pyroblast = "Pyroblast",
     Mending = "Mending",

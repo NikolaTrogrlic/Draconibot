@@ -22,10 +22,11 @@ export class JoinParty extends ButtonBase{
               if (party) {
       
                 if (party.isBattling || player.battleID) {
-                  return interaction.reply({
+                  const reply = await interaction.reply({
                     content: "May not join a party in battle!",
                     ephemeral: true,
                   });
+                  setTimeout(() => reply.delete(), 3000);
                 }
       
                 player.partyID = party.id;
@@ -33,32 +34,36 @@ export class JoinParty extends ButtonBase{
                 globals.partyInvites.splice(globals.partyInvites.indexOf(invite), 1);
       
                 const mention = userMention(interaction.user.id);
-                return interaction.reply(`${mention} accepted the party invite.`);
-                
+                const reply = await interaction.reply(`${mention} accepted the party invite.`);
+                setTimeout(() => reply.delete(), 20000);
               } else {
                 const mention = userMention(interaction.user.id);
-                return interaction.reply({
+                const reply = await interaction.reply({
                   content: `${mention} accepted party invite, but the party was removed in the meantime.`,
                   ephemeral: true,
                 });
+                setTimeout(() => reply.delete(), 3000);
               }
             } else {
-              return interaction.reply({
+              const reply = await interaction.reply({
                 content: "You must be a player to accept an invite.",
                 ephemeral: true,
               });
+              setTimeout(() => reply.delete(), 3000);
             }
           } else {
-            return interaction.reply({
+            const reply = await interaction.reply({
               content: `This invite is not meant for you.`,
               ephemeral: true,
             });
+            setTimeout(() => reply.delete(), 3000);
           }
         } else {
-          return interaction.reply({
+          const reply = await interaction.reply({
             content: "Error occured while accepting party invite.",
             ephemeral: true,
           });
+          setTimeout(() => reply.delete(), 2000);
         }
   }
 

@@ -9,6 +9,7 @@ export enum BlockType{
 
 export class Combatant{
 
+    nickname: string;
     name: string;
     baseStats: Stats;
     stats: Stats;
@@ -30,6 +31,7 @@ export class Combatant{
         this.bp = bp;
         this.maxBP = 3;
         this.isDefending = false;
+        this.nickname = name;
     }
 
     increaseBpBy(amount: number){

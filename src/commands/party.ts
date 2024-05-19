@@ -198,7 +198,8 @@ function addToParty(interaction: any, globals: Globals, player: Player){
 
 async function inviteToParty(party: Party, invitedPlayer: Player, interaction: any, globals: Globals){
 
-  globals.partyInvites.push(new PartyInvite(invitedPlayer.userID, party.id,interaction.id))
+  let invite = new PartyInvite(invitedPlayer.userID, party.id,interaction.id);
+  globals.partyInvites.push(invite);
   await interaction.editReply(`Invited ${invitedPlayer.name} to party.`);
 
   const row = new ActionRowBuilder()
@@ -206,5 +207,12 @@ async function inviteToParty(party: Party, invitedPlayer: Player, interaction: a
 
   const mention = userMention(invitedPlayer.userID);
 
-  interaction.followUp({ content: `${mention}, you have been invited to ${party.partyLeader?.name}'s party...`, components: [row]});
+  const result = await interaction.followUp({ content: `${mention}, you have been invited to ${party.partyLeader?.name}'s party...`, components: [row]});
+  setTimeout(() => {
+    result.delete();
+    let inviteIndex = globals.partyInvites.indexOf(invite);
+    if(inviteIndex != -1){
+      globals.partyInvites.splice(inviteIndex);
+    }
+  }, 20000);
 }

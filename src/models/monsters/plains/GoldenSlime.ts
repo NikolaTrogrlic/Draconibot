@@ -11,16 +11,16 @@ export class GoldenSlime extends Monster{
       this.resistances = [ElementalType.Fire]
    }
 
-   performCombatTurn(battle: Battle): string {
+   performCombatTurn(battle: Battle): string[] {
 
       if(this.isLucky()){
          for(let combatant of battle.getMonsters()){
             combatant.heal(5);
          }
-         return "Heals all monsters by 5 HP";
+         return ["Secretes a funky liquid, healing all monsters by 5 HP."];
       }
       else{
-         return "Shines brightly."
+         return ["Shines brightly."]
       }
    }
 }

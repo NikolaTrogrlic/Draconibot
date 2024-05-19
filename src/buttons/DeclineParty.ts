@@ -22,30 +22,35 @@ export class DeclineParty extends ButtonBase{
           if (party) {
             globals.partyInvites.splice(globals.partyInvites.indexOf(invite), 1);
             const mention = userMention(interaction.user.id);
-            return interaction.reply(`${mention} declined the party invite.`);       
+            const reply = await interaction.reply(`${mention} declined the party invite.`);   
+            setTimeout(() => reply.delete(), 3000);    
           } else {
-            return interaction.reply({
+            const reply = await interaction.reply({
               content: `Invite expired.`,
               ephemeral: true,
             });
+            setTimeout(() => reply.delete(), 3000);
           }
         } else {
-          return interaction.reply({
+          const reply = await interaction.reply({
             content: "You must be a player to accept an invite.",
             ephemeral: true,
           });
+          setTimeout(() => reply.delete(), 3000);
         }
       } else {
-        return interaction.reply({
+        const reply = await interaction.reply({
           content: `This invite is not meant for you.`,
           ephemeral: true,
         });
+        setTimeout(() => reply.delete(), 3000);
       }
     } else {
-      return interaction.reply({
+      const reply = await interaction.reply({
         content: "Error occured while declining party invite.",
         ephemeral: true,
       });
+      setTimeout(() => reply.delete(), 3000);
     }
   }
 

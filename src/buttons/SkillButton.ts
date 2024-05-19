@@ -30,53 +30,59 @@ export class SkillButton {
               ephemeral: true,
             });
           } else {
-            if (player.bp > skill?.bpCost) {
-              interaction.reply({
+            if (player.bp >= skill?.bpCost) {
+              const reply = await interaction.reply({
                 content: `Using ${skillName} on target ${
                   battle.currentTarget + 1
                 }`,
                 ephemeral: true,
               });
+              reply.delete();
               battle.currentActionOwner = undefined;
               skill.use(player, battle);
               battle.currentTarget = -1;
             } else {
-              interaction.reply({
+              const reply = await interaction.reply({
                 content: `Not enough bp to perform skill. BP COST: ${skill.bpCost}`,
                 ephemeral: true,
               });
+              setTimeout(() => reply.delete(), 2000);
             }
           }
         } else {
-          if (player.bp > skill?.bpCost) {
-            interaction.reply({
+          if (player.bp >= skill?.bpCost) {
+            const reply = await interaction.reply({
               content: `Using ${skillName} on target ${
                 battle.currentTarget + 1
               }`,
               ephemeral: true,
             });
+            reply.delete();
             battle.currentActionOwner = undefined;
             skill.use(player, battle);
             battle.currentTarget = -1;
           } else {
-            interaction.reply({
-              content: `Not enough bp to perform skill. BP COST: ${skill.bpCost}`,
+            const reply = await interaction.reply({
+              content: `Not enough bp to perform skill. BP COST: ${skill.bpCost}. YOUR BP: ${player.bp}`,
               ephemeral: true,
             });
+            setTimeout(() => reply.delete(), 2000);
           }
         }
       } else {
-        interaction.reply({
+        const reply = await interaction.reply({
           content:
             "Must be in a battle and must be your turn to perform actions.",
           ephemeral: true,
         });
+        setTimeout(() => reply.delete(), 2000);
       }
     } else {
-      interaction.reply({
+      const reply = await interaction.reply({
         content: "Must create a character first to perform actions in battle.",
         ephemeral: true,
       });
+      setTimeout(() => reply.delete(), 2000);
     }
   }
 }

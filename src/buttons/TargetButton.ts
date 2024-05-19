@@ -10,14 +10,17 @@ export class TargetButton{
           let battle = globals.getPlayerBattle(player);
           if(battle && battle.currentActionOwner == player){
             battle.updateTarget(target)
-            interaction.reply({content: `Changed target on next skill use to ${target + 1} .`, ephemeral: true});
+            const reply = await interaction.reply({content: `Changed target on next skill use to ${target + 1} .`, ephemeral: true});
+            setTimeout(() => reply.delete(), 300);
           }
           else{
-            interaction.reply({content: `Must be in a battle and it must be your turn.`, ephemeral: true});
+            const reply = await interaction.reply({content: `Must be in a battle and it must be your turn.`, ephemeral: true});
+            setTimeout(() => reply.delete(), 800);
           }
       }
       else{
-         interaction.reply({content: `Must be a participant to target creatures.`, ephemeral: true});
+         const reply = await interaction.reply({content: `Must be a participant to target creatures.`, ephemeral: true});
+            setTimeout(() => reply.delete(), 800);
       }
    }
 }    

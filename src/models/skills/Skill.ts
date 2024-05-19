@@ -19,11 +19,11 @@ export abstract class Skill{
 
     use(user:Player, battle: Battle){
         user.bp -= this.bpCost;
-        const message = this.skillEffect(user, battle);
-        battle.sendActionMessage(message, user);
+        const messages = this.skillEffect(user, battle);
+        battle.displayAction(messages, user);
     }
 
-    abstract skillEffect(user: Player,battle: Battle): string;
+    abstract skillEffect(user: Player,battle: Battle): string[];
 
     getTarget(user: Player, battle: Battle): Combatant[]
     {
@@ -42,8 +42,8 @@ export abstract class Skill{
                 {
                     let target = battle.currentTarget;
                     const monsters = battle.getMonsters();
-                    if(battle.currentTarget > monsters.length){
-                        target = monsters.length;
+                    if(battle.currentTarget >= monsters.length){
+                        target = monsters.length - 1;
                     }
                     else if(target < 0){
                         target = 0;

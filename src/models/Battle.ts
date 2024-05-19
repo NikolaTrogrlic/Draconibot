@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, TextChannel, ThreadChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ColorResolvable, Embed, EmbedBuilder, Message, TextChannel, ThreadChannel } from "discord.js";
 import { average, createID } from "../utils";
 import { Combatant } from "./Combatant";
 import { ElementalType, nextElement, randomElement } from "./enums/ElementalType";
@@ -15,7 +15,7 @@ export class Battle {
     combatants: Combatant[];
     turn: number;
     burst: ElementalType;
-    thread: ThreadChannel | undefined;
+    battleUI: Message<any> | undefined;
     bonusEXP: number;
     combatLevel: number;
     currentAction: Combatant | undefined;
@@ -86,6 +86,7 @@ export class Battle {
     setNewTurn() {
         this.turn++;
         this.combatants.sort((x: Combatant, y: Combatant) => (y.stats.speed - x.stats.speed));
+        this.burst = nextElement(this.burst);
 
         for (let i = 0; i < this.combatants.length; i++) {
             if (i == 0 && this.combatants.length > 1) {
@@ -142,15 +143,11 @@ export class Battle {
             if (combatant.actions > 0) {
                 this.currentAction = combatant;
                 if (combatant instanceof Player) {
-                    this.burst = nextElement(this.burst);
                     this.playerTurn(combatant);
                     return;
                 }
                 else if (combatant instanceof Monster) {
-                    if (this.thread) {
-                        await this.thread.send({ embeds: [this.monsterTurn(combatant)] });
-                    }
-                    this.nextAction();
+                    this.monsterTurn(combatant);
                     return;
                 }
             }
@@ -162,38 +159,63 @@ export class Battle {
 
 
 
-    monsterTurn(monster: Monster): EmbedBuilder {
-
-        let battleEmbed = new EmbedBuilder()
-            .setColor(16711680)
-            .setTitle(`${monster.name}'s turn.`);
-
-        let actionReport = monster.performCombatTurn(this);
-        monster.actions--;
-
-        return battleEmbed.setDescription(actionReport);
+    async monsterTurn(monster: Monster) {
+       let messages = monster.performCombatTurn(this);
+       let embed = this.getBattleEmbed(`${monster.nickname}'s turn.`, messages, 16711680);
+       monster.actions--;
+       if(this.battleUI){
+        await this.battleUI.edit({ embeds: [embed], components: [] });
+        setTimeout(() => this.nextAction(),messages.length * 1600);
+       }
     }
 
-    async sendActionMessage(message: string, actionUser: Combatant, moveToNextAction: boolean = true) {
+    getBattleEmbed(title: string, messages: string[], color: ColorResolvable = 0x884DFF){
 
-        let battleEmbed = new EmbedBuilder()
-            .setTitle(`${actionUser.name}'s turn.`)
-            .setDescription(message);
+        let message = "";
+        
+        for(let i = 0; i < 5;i++){
+            if(i < messages.length){
+                message += messages[i] + "\n";
+            }
+            else{
+                message += "\u200B\n";
+            }
+        }
 
+        let embed = new EmbedBuilder()
+            .setAuthor({name: `${this.location} Battle.`})
+            .setTitle(`${title}`)
+            .setDescription(message)
+            .setColor(color)
+
+        for (let partyMember of this.getPlayers()) {
+            embed.addFields({ name: `${partyMember.nickname}`, value: `${partyMember.stats.HP}/${partyMember.stats.maxHP} HP`, inline: true });
+        }
+
+        embed.addFields({ name: ' ', value: ' ' });
+
+        for (let monster of this.getMonsters()) {
+            embed.addFields({ name: `${monster.nickname}`, value: `${monster.stats.HP}/${monster.stats.maxHP} HP`, inline: true });
+        }
+
+        return embed;
+    }
+
+    async displayAction(messages: string[], actionUser: Combatant, moveToNextAction: boolean = true) {
+
+        let color = 235678;
         if (actionUser instanceof Monster) {
-            battleEmbed.setColor(16711680);
-        }
-        else if (actionUser instanceof Player) {
-            battleEmbed.setColor(235678);
+            color = 16711680;
         }
 
-        if (this.thread) {
-            this.thread.send({ embeds: [battleEmbed] });
+        let embed = this.getBattleEmbed(`${actionUser.nickname}'s turn.`, messages, color);
+        if (this.battleUI) {
+            this.battleUI.edit({ embeds: [embed], components: [] });
         }
 
         if (moveToNextAction) {
             actionUser.actions--;
-            this.nextAction();
+            setTimeout(() => this.nextAction(), messages.length * 1600);
         }
     }
 
@@ -205,32 +227,13 @@ export class Battle {
 
         this.currentActionOwner = player;
         this.currentTarget = -1;
-        let turnColor = 26316;
 
+        let turnColor = 26316;
         if (player.mainJob.jobElement == this.burst) {
             turnColor = 16766720;
         }
 
-        let battleEmbed = new EmbedBuilder()
-            .setColor(turnColor)
-            .setTitle(`▶️ ${player.name}`)
-            .setDescription(`${player.stats.HP}/${player.stats.maxHP} HP | ${player.bp} BP\nElemental Field:  ${this.burst}\nBlock: ${player.blockMeter}/200`);
-
-        for (let monster of this.getMonsters()) {
-            battleEmbed.addFields({ name: `${monster.name}`, value: `${monster.stats.HP}/${monster.stats.maxHP} HP`, inline: true });
-        }
-
-        const players = this.getPlayers();
-
-        if (players.length > 1) {
-            battleEmbed.addFields({ name: '\u200B', value: '\u200B' });
-            for (let partyMember of players) {
-                if (partyMember.name != player.name) {
-                    battleEmbed.addFields({ name: `${partyMember.name}`, value: `${partyMember.stats.HP}/${partyMember.stats.maxHP} HP`, inline: true });
-                }
-            }
-        }
-
+        let embed = this.getBattleEmbed(`${player.nickname}'s turn`,[`BP: ${player.bp} | Block: ${player.blockMeter}/200`,`Elemental Field:  ${this.burst}`]);
         let buttons = [];
         const monsters = this.getMonsters();
         const targetRow = new ActionRowBuilder<ButtonBuilder>();
@@ -238,8 +241,8 @@ export class Battle {
         for (let i = 0; i < monsters.length; i++) {
             buttons.push(new ButtonBuilder()
                 .setCustomId(`${i}`)
-                .setLabel(`[${i + 1}] Target ${monsters[i].name}`)
-                .setStyle(ButtonStyle.Danger));
+                .setLabel(`${monsters[i].nickname}`)
+                .setStyle(ButtonStyle.Secondary));
         }
         targetRow.addComponents(...buttons);
 
@@ -255,14 +258,14 @@ export class Battle {
             buttons.push(new ButtonBuilder()
                 .setCustomId(skill.name)
                 .setLabel(skill.name)
-                .setStyle(ButtonStyle.Danger));
+                .setStyle(ButtonStyle.Success));
         }
 
         for (let skill of player.subJob.skills) {
             buttons.push(new ButtonBuilder()
                 .setCustomId(skill.name)
                 .setLabel(skill.name)
-                .setStyle(ButtonStyle.Danger));
+                .setStyle(ButtonStyle.Success));
         }
 
         const chunkSize = 5;
@@ -272,8 +275,8 @@ export class Battle {
             skillRow.addComponents(...buttonsForRow);
         }
 
-        if (this.thread) {
-            await this.thread.send({ embeds: [battleEmbed], components: [targetRow, skillRow] });
+        if (this.battleUI) {
+            await this.battleUI.edit({ embeds: [embed], components: [targetRow, skillRow] });
         }
     }
 
@@ -284,17 +287,16 @@ export class Battle {
         }
 
         this.battleInProgress = true;
+        const battleUI = this.getBattleEmbed(`Encounter !`, [`- Enemies appear !`], 0xFF0000);
 
-        if (!this.thread) {
-            this.thread = await this.channel.threads.create({
-                name: 'Battle at the ' + this.location,
-                reason: 'Draconibot battle instance.'
-            });
+        if (!this.battleUI) {
+            this.battleUI = await this.channel.send({embeds: [battleUI], components: []});
+        }
+        else{
+            this.battleUI.edit({embeds: [battleUI], components: []});
         }
 
-        if (this.thread.joinable) await this.thread.join();
-
-        this.setNewTurn();
+        setTimeout(() => this.setNewTurn(),1000);
     }
 
     async battleEnd(actionReport: string | undefined = undefined) {
@@ -302,6 +304,7 @@ export class Battle {
         this.battleInProgress = false;
         const players = this.getPlayers();
         let victoryMessage = " ";
+        let embed = this.getBattleEmbed(`Battle Ended`, []);
 
         for (let player of players) {
             if (this.battleLost == false) {
@@ -310,7 +313,7 @@ export class Battle {
             player.stats.HP = player.stats.maxHP;
         }
 
-        if (this.thread) {
+        if (this.battleUI) {
 
             let message = "";
 
@@ -324,7 +327,9 @@ export class Battle {
                 message += "\n" + victoryMessage;
             }
 
-            await this.thread.send({ content: message, components: [targetRow] });
+            embed.setDescription(message);
+
+            await this.battleUI.edit({ embeds: [embed], components: [targetRow] });
         }
     }
 }

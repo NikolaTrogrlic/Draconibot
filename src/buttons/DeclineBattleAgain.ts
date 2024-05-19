@@ -44,7 +44,7 @@ import {
          else{
             player.battleID = undefined;
          }
-         await previousBattle.thread?.delete();
+        await previousBattle.battleUI?.delete();
 
          const index = globals.battles.indexOf(previousBattle, 0);
          if (index > -1) {
@@ -52,11 +52,13 @@ import {
          }
        }
        else{
-         return interaction.reply("You are not even in a battle.");
+         const reply = await interaction.reply("You are not even in a battle.");
+         setTimeout(() => reply.delete(), 3000);
        }
 
      } else {
-       return interaction.reply("Must be in a battle first.");
+       const reply = await interaction.reply("Must be in a battle first.");
+       setTimeout(() => reply.delete(), 3000);
      }
    }
  } 

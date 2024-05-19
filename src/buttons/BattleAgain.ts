@@ -54,16 +54,19 @@ export class BattleAgain extends ButtonBase {
           }
          }
 
-        await interaction.reply("Starting battle...");
+        const reply = await interaction.reply("Starting battle...");
+        reply.delete();
         previousBattle.startSecondBattle(
           location,
           Monsters.getMonstersForLocation(location)
         );
       } else {
-        return interaction.reply("Your party needs to be in a battle");
+        const reply = await interaction.reply("Your party needs to be in a battle");
+        setTimeout(() => reply.delete(), 3000);
       }
     } else {
-      return interaction.reply("Must be in a battle first.");
+      const reply = await interaction.reply("Must be in a battle first.");
+      setTimeout(() => reply.delete(), 3000);
     }
   }
 }

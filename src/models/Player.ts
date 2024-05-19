@@ -57,7 +57,6 @@ export class Player extends Combatant {
     this.stats.pAtk =
       baseStats.pAtk +
       Math.round(baseStats.pAtk * (classPercantageModifiers.pAtk / 100));
-    console.log(this.stats.pAtk);
     this.stats.mAtk =
       baseStats.mAtk +
       Math.round(baseStats.mAtk * (classPercantageModifiers.mAtk / 100));
