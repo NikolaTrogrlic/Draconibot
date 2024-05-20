@@ -1,8 +1,14 @@
 import { ButtonInteraction } from "discord.js";
-import { Globals } from "../globals"; 
+import { Globals } from "../../globals"; 
+import { IGameInteraction } from "../base/IGameInteraction";
 
-export class SkillButton {
-  static async execute(
+export class SkillButton implements IGameInteraction {
+
+  needsPlayerExistance: boolean = true;
+  canOnlyPerformOutsideBattle: boolean = false;
+  canOnlyPerformOnOwnTurn: boolean = true;
+  
+  async execute(
     interaction: ButtonInteraction,
     globals: Globals,
     skillName: string
@@ -31,13 +37,7 @@ export class SkillButton {
             });
           } else {
             if (player.bp >= skill?.bpCost) {
-              const reply = await interaction.reply({
-                content: `Using ${skillName} on target ${
-                  battle.currentTarget + 1
-                }`,
-                ephemeral: true,
-              });
-              reply.delete();
+              await interaction.update({fetchReply: false});
               battle.currentActionOwner = undefined;
               skill.use(player, battle);
               battle.currentTarget = -1;
@@ -51,13 +51,7 @@ export class SkillButton {
           }
         } else {
           if (player.bp >= skill?.bpCost) {
-            const reply = await interaction.reply({
-              content: `Using ${skillName} on target ${
-                battle.currentTarget + 1
-              }`,
-              ephemeral: true,
-            });
-            reply.delete();
+            await interaction.update({fetchReply: false});
             battle.currentActionOwner = undefined;
             skill.use(player, battle);
             battle.currentTarget = -1;

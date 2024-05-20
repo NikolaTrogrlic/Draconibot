@@ -1,6 +1,7 @@
 import { ButtonBuilder, ButtonInteraction, ButtonStyle, userMention } from "discord.js";
-import { Globals } from "../globals";
-import { ButtonBase, ButtonKey } from "./ButtonBase";
+import { Globals } from "../../globals";
+import { ButtonType } from "../ButtonType";
+import { ButtonBase } from "../base/ButtonBase";
 
 export class JoinParty extends ButtonBase{
 
@@ -69,12 +70,8 @@ export class JoinParty extends ButtonBase{
 
   static button(previousInteractionID: string): ButtonBuilder {
     return new ButtonBuilder()
-      .setCustomId(ButtonKey.JoinParty + previousInteractionID)
+      .setCustomId(ButtonType.JoinParty + previousInteractionID)
       .setLabel('Join Party')
       .setStyle(ButtonStyle.Success);
-  }
-
-  constructor(){
-    super(ButtonKey.JoinParty);
   }
 }

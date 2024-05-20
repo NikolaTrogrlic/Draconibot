@@ -5,8 +5,8 @@ import { ElementalType, nextElement, randomElement } from "./enums/ElementalType
 import { Player } from "./Player";
 import { CombatLocation } from "./enums/Location";
 import { Monster } from "./monsters/Monster";
-import { BattleAgain } from "../buttons/BattleAgain";
-import { DeclineBattleAgain } from "../buttons/DeclineBattleAgain";
+import { BattleAgain } from "../interactions/buttons/BattleAgain";
+import { DeclineBattleAgain } from "../interactions/buttons/DeclineBattleAgain";
 
 export class Battle {
 
@@ -223,10 +223,34 @@ export class Battle {
         this.currentTarget = number;
     }
 
+    getTargetingRow(): ActionRowBuilder<ButtonBuilder>{
+        const targetRow = new ActionRowBuilder<ButtonBuilder>();
+        const monsters = this.getMonsters();
+        let buttons = [];
+
+        for (let i = 0; i < monsters.length; i++) {
+            let button = new ButtonBuilder()
+            .setCustomId(`${i}`)
+            .setLabel(`${monsters[i].nickname}`);
+
+            if(i == this.currentTarget){
+                button.setStyle(ButtonStyle.Danger);
+            }
+            else{
+                button.setStyle(ButtonStyle.Secondary);  
+            }
+
+            buttons.push(button);
+        }
+        targetRow.addComponents(...buttons);
+
+        return targetRow;
+    }
+
     async playerTurn(player: Player) {
 
         this.currentActionOwner = player;
-        this.currentTarget = -1;
+        this.currentTarget = 0;
 
         let turnColor = 26316;
         if (player.mainJob.jobElement == this.burst) {
@@ -234,19 +258,9 @@ export class Battle {
         }
 
         let embed = this.getBattleEmbed(`${player.nickname}'s turn`,[`BP: ${player.bp} | Block: ${player.blockMeter}/200`,`Elemental Field:  ${this.burst}`]);
+        const targetRow = this.getTargetingRow();
+
         let buttons = [];
-        const monsters = this.getMonsters();
-        const targetRow = new ActionRowBuilder<ButtonBuilder>();
-
-        for (let i = 0; i < monsters.length; i++) {
-            buttons.push(new ButtonBuilder()
-                .setCustomId(`${i}`)
-                .setLabel(`${monsters[i].nickname}`)
-                .setStyle(ButtonStyle.Secondary));
-        }
-        targetRow.addComponents(...buttons);
-
-        buttons = [];
         for (let skill of player.generalSkills) {
             buttons.push(new ButtonBuilder()
                 .setCustomId(skill.name)

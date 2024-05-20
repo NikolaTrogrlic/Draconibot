@@ -4,21 +4,21 @@ import {
    ButtonStyle,
    CacheType,
  } from "discord.js";
- import { Globals } from "../globals";
- import { ButtonBase, ButtonKey } from "./ButtonBase";
+ import { Globals } from "../../globals";
+import { ButtonType } from "../ButtonType";
+import { ButtonBase } from "../base/ButtonBase";
  
  export class DeclineBattleAgain extends ButtonBase {
+
+  needsPlayerExistance = true;
+
    static button(): ButtonBuilder {
      return new ButtonBuilder()
-       .setCustomId(ButtonKey.DeclineBattleAgain)
+       .setCustomId(ButtonType.DeclineBattleAgain)
        .setLabel("Stop Fighting")
        .setStyle(ButtonStyle.Danger);
    }
- 
-   constructor() {
-     super(ButtonKey.DeclineBattleAgain);
-   }
- 
+
    async execute(
      interaction: ButtonInteraction<CacheType>,
      globals: Globals,
@@ -38,7 +38,7 @@ import {
                }
             }
             else{
-               return interaction.reply("Error occured.");
+               await interaction.reply("Error occured.");
             }
          }
          else{

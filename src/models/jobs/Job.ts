@@ -7,9 +7,9 @@ import { Stats } from "../Stats";
 export class Job {
 
   name: JobName;
-  level: number;
+  level: number; //SAVE TO DB
   skills: Skill[]
-  exp: number;
+  exp: number; //SAVE TO DB
   jobElement: ElementalType;
   statModifiers: Stats;
   unlockableSkills: Record<number, Skill>;
