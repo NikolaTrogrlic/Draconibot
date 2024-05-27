@@ -1,6 +1,7 @@
-import { Battle } from "./models/Battle";
+
 import { Party } from "./models/Party";
 import { Player } from "./models/Player";
+import { Battle } from "./models/battle/Battle";
 
 export class Globals{
 

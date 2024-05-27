@@ -8,7 +8,7 @@ import { ElementalType } from "../enums/ElementalType"
 export class Cleric extends Job{
 
     constructor() {
-        const stats = new Stats({HP:20,armor:10,resistance:10,pAtk:0,mAtk:0,luck:10,speed:0});
+        const stats = new Stats({HP:20,strength:0,magic:10,luck:10,speed:0});
         const classElement = ElementalType.Light;
 
         const unlockablePassives = {

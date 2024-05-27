@@ -8,7 +8,7 @@ import { ElementalType } from "../enums/ElementalType"
 export class Pyromancer extends Job{
 
     constructor() {
-        const stats = new Stats({HP:10,armor:0,resistance:25,pAtk:0,mAtk:20,luck:0,speed:0});
+        const stats = new Stats({HP:0,strength:0,magic:20,luck:20,speed:5});
         const classElement = ElementalType.Fire;
 
         const unlockablePassives = {

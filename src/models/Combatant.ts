@@ -1,11 +1,6 @@
 import { Stats } from "./Stats";
+import { CombatMessage } from "./battle/CombatMessage";
 import { ElementalType } from "./enums/ElementalType";
-
-export enum BlockType{
-    Armor = 0,
-    Resistance = 1,
-    None = 3
-}
 
 export class Combatant{
 
@@ -17,19 +12,23 @@ export class Combatant{
     bp: number;
     maxBP: number;
     battleID?: string;
-    blockMeter = 0;
     isDefending: boolean;
+    isFleeing: boolean;
+    isDefeated: boolean = false;
     weaknesses: ElementalType[] = [];
     resistances: ElementalType[] = [];
     
     constructor(name: string,baseStats: Stats,battleID: string | undefined, bp: number = 1,actions: number = 1){
         this.name = name;
         this.battleID = battleID;
-        this.stats = baseStats;
-        this.baseStats = baseStats;
+        this.stats = new Stats({HP: 0, strength: 0, magic: 0, luck: 0 , speed: 0});
+        this.baseStats = new Stats({HP: 0, strength: 0, magic: 0, luck: 0 , speed: 0});
+        this.stats.setStats(baseStats);
+        this.baseStats.setStats(baseStats);
         this.actions = actions;
         this.bp = bp;
-        this.maxBP = 3;
+        this.maxBP = 5;
+        this.isFleeing = false;
         this.isDefending = false;
         this.nickname = name;
     }
@@ -41,49 +40,51 @@ export class Combatant{
         }
     }
 
-    takeDamage(amount: number, blockType = BlockType.Armor,damageType: ElementalType = ElementalType.Physical): string{
-
-        let message = "";
+    takeDamage(amount: number, damageType: ElementalType = ElementalType.Physical): CombatMessage{
         
-        if(this.blockMeter >= 200){
-            this.blockMeter = 0;
-            message += `**[BLOCKED]** Damage blocked by ${this.name}`;
-        }
-        else{
+        let isResisting: boolean = false;
+        let isWeaknessHit: boolean = false;
 
-            if(this.resistances.findIndex(x => x == damageType) != -1){
-                amount = Math.floor(amount * 0.8);
-                message += "**[RESIST]**";
-            }
-            else if(this.weaknesses.findIndex(x => x == damageType) != -1){
-                amount = Math.floor(amount * 1.2);
-                message += "**[WEAKNESS HIT]**";
-            }
-    
-            if(this.isDefending){
-                amount = Math.round(amount / 2);
-            }
-            else if(amount <= 0){
-                amount = 1;
-            }
-    
+        if(this.resistances.findIndex(x => x == damageType) != -1){
+            amount = amount * 0.6;
+            isResisting = true;
+        }
+        else if(this.weaknesses.findIndex(x => x == damageType) != -1){
+            amount = amount * 1.4;
+            isWeaknessHit = true;
+        }
+        
+        if(this.isDefending){
+            amount = amount / 2;
+        }
+        else if(amount <= 0){
+            amount = 1;
+        }
+
+        amount = Math.round(amount);
+
+        let combatMessage = new CombatMessage("");
+
+        if(this.stats.HP > 0){
+            combatMessage.message = `Deals **${amount}** ${damageType} damage to ${this.nickname}.`;
+
             this.stats.HP -= amount;
 
-            if(blockType == BlockType.Armor){
-                this.blockMeter += this.stats.armor;
+            if(isWeaknessHit){
+                combatMessage.message = `${combatMessage.message} [${damageType} **WEAKNESS**]`;
             }
-            else if(blockType == BlockType.Resistance){
-                this.blockMeter += this.stats.resistance;
+            else if(isResisting){
+                combatMessage.message = `${combatMessage.message} [${damageType} **RESIST**]`;
             }
 
-            if(this.blockMeter > 200){
-                this.blockMeter = 200;
+            if(this.stats.HP <= 0 && this.isDefeated == false){
+                let message = `\n - *${this.nickname} defeated !*`;
+                combatMessage.message += message;
+                this.isDefeated = true;
             }
-    
-            message += `Deals ${amount} damage to ${this.name}. \n`;
         }
 
-        return message;
+        return combatMessage;
     }
 
     heal(amount: number){

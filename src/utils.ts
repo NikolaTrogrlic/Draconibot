@@ -7,3 +7,5 @@ export function average(values: number[]): number{
     const avg = (sum / values.length) || 0;
     return Math.round(avg);
 }
+
+export const delay = (ms: number) => new Promise(res => setTimeout(res, ms));

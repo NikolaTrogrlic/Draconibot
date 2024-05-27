@@ -12,7 +12,7 @@ export class TargetButton implements IGameInteraction{
 
       const player = globals.getPlayerById(interaction.user.id);
       const battle = globals.getPlayerBattle(player!);
-      battle!.updateTarget(target)
+      battle!.currentTarget = target;
 
       interaction.message.components.splice(0,1);
       await interaction.update({fetchReply: false, components: [battle!.getTargetingRow(), ...interaction.message.components]});

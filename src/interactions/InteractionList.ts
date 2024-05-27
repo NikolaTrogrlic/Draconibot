@@ -16,6 +16,8 @@ import { DeclineParty } from "./buttons/DeclineParty";
 import { JoinParty } from "./buttons/JoinParty";
 import { TargetButton } from "./buttons/TargetButton";
 import { SkillButton } from "./buttons/SkillButton";
+import { InfoCommand } from "./commands/InfoCommand";
+import { SubJobCommand } from "./commands/SubJobCommand";
 
 export const menus: { [key: string]: SelectMenuBase} = {
    [SelectMenuType.SetMainJobMenu] : new MainJobSelect(),
@@ -26,7 +28,9 @@ export const commands: { [key: string]: CommandBase} = {
    [CommandType.Battle] : new BattleCommand(),
    [CommandType.Job] : new JobCommand(),
    [CommandType.Party] : new PartyCommand(),
-   [CommandType.Start] : new StartCommand()
+   [CommandType.Start] : new StartCommand(),
+   [CommandType.Info] : new InfoCommand(),
+   [CommandType.SubJob]: new SubJobCommand(),
 };
 
 //Excludes skill and targeting buttons

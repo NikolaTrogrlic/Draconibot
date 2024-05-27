@@ -9,6 +9,8 @@ import { AttackAction } from "./skills/general/AttackAction";
 import { DefendAction } from "./skills/general/DefendAction";
 import { Freelancer } from "./jobs/Freelancer";
 import { Knight } from "./jobs/Knight";
+import { BurstAction } from "./skills/general/BurstAction";
+import { FleeAction } from "./skills/general/FleeAction";
 
 export class Player extends Combatant {
   constructor(name: string, id: string) {
@@ -16,11 +18,9 @@ export class Player extends Combatant {
       name,
       new Stats({
         HP: 100,
-        armor: 5,
-        resistance: 0,
-        pAtk: 10,
-        mAtk: 10,
-        speed: 10,
+        strength: 10,
+        magic: 10,
+        speed: 5,
         luck: 0,
       }),
       undefined
@@ -30,42 +30,34 @@ export class Player extends Combatant {
     this.jobs = Jobs.getJobsForLevel(1);
     this.changeMainJob(JobName.Freelancer);
     this.changeSubJob(JobName.Knight);
+    this.burst = 0;
+    this.maxBurst = 100;
   }
 
   level: number = 1;
   exp: number = 0;
-
   mainJob: Job = new Freelancer();
   subJob: Job = new Knight();
   jobs: Job[];
-  generalSkills: Skill[] = [new AttackAction(), new DefendAction()];
-
+  burst: number;
+  maxBurst: number;
+  generalSkills: Skill[] = [new AttackAction(), new DefendAction(),new FleeAction(), new BurstAction()];
   unlockedPassives: Passive[] = [];
   equippedPassives: Passive[] = [];
-
   partyID?: string;
   userID: string = "";
 
-  updateStats(baseStats: Stats, classPercantageModifiers: Stats) {
-    this.stats.maxHP =
-      baseStats.maxHP +
-      Math.round(baseStats.maxHP * (classPercantageModifiers.maxHP / 100));
-    this.stats.armor = baseStats.armor + classPercantageModifiers.armor;
-    this.stats.resistance =
-      baseStats.resistance + classPercantageModifiers.resistance;
-
-    this.stats.pAtk =
-      baseStats.pAtk +
-      Math.round(baseStats.pAtk * (classPercantageModifiers.pAtk / 100));
-    this.stats.mAtk =
-      baseStats.mAtk +
-      Math.round(baseStats.mAtk * (classPercantageModifiers.mAtk / 100));
-    this.stats.speed =
-      baseStats.speed +
-      Math.round(baseStats.speed * (classPercantageModifiers.speed / 100));
-    this.stats.luck =
-      baseStats.luck +
-      Math.round(baseStats.luck * (classPercantageModifiers.luck / 100));
+  updateStats(classModifiers: Stats) {
+    
+    this.stats.setStats(
+      {
+        HP: this.baseStats.maxHP + Math.round(this.baseStats.maxHP * (classModifiers.maxHP / 100)),
+        strength: this.baseStats.strength + Math.round(this.baseStats.strength * (classModifiers.strength / 100)),
+        magic: this.baseStats.magic + Math.round(this.baseStats.magic * (classModifiers.magic / 100)),
+        speed: this.baseStats.speed + Math.round(this.baseStats.speed * (classModifiers.speed / 100)),
+        luck:  this.baseStats.luck + Math.round(this.baseStats.luck * (classModifiers.luck / 100)),
+      }
+    );
 
     if (this.stats.HP >= this.stats.maxHP) {
       this.stats.HP = this.stats.maxHP;
@@ -77,7 +69,7 @@ export class Player extends Combatant {
   changeMainJob(selectedClass: JobName): string {
     const job = this.jobs.find((x) => x.name == selectedClass);
     if (job) {
-      this.updateStats(this.baseStats, job.statModifiers);
+      this.updateStats(job.statModifiers);
       if (this.subJob.name != selectedClass) {
         this.mainJob = job;
         this.mainJob.refreshSkills();
@@ -159,17 +151,28 @@ export class Player extends Combatant {
 
     while (this.exp > 100) {
       this.level++;
-      this.baseStats.HP += 25;
-      this.baseStats.mAtk += 5;
-      this.baseStats.pAtk += 5;
-      this.baseStats.speed += 1;
-
-      if (this.level % 5 == 0) {
-        this.baseStats.luck += 1;
+      if(this.level <= 10){
+        this.baseStats.HP += 50;
+        this.baseStats.strength += 5;
+        this.baseStats.magic += 5;
+      }
+      else if(this.level <= 25){
+        this.baseStats.HP += 100;
+        this.baseStats.strength += 8;
+        this.baseStats.magic += 8;
+      }
+      else{
+        this.baseStats.HP += 150;
+        this.baseStats.strength += 10;
+        this.baseStats.magic += 10;
+      }
+      this.baseStats.speed += (1 * Math.ceil(this.level/10));
+      if (this.level % 2 == 0) {
+        this.baseStats.luck++;
       }
       this.exp -= 100;
       leveledUp = true;
-      this.updateStats(this.baseStats, this.mainJob.statModifiers);
+      this.updateStats(this.mainJob.statModifiers);
     }
 
     if (leveledUp) {

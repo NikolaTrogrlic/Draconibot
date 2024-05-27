@@ -44,7 +44,7 @@ import { ButtonBase } from "../base/ButtonBase";
          else{
             player.battleID = undefined;
          }
-        await previousBattle.battleUI?.delete();
+        await previousBattle.display.mainDisplayMessage?.delete();
 
          const index = globals.battles.indexOf(previousBattle, 0);
          if (index > -1) {

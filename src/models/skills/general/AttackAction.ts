@@ -1,5 +1,6 @@
-import { Battle } from "../../Battle";
+
 import { Player } from "../../Player";
+import { Battle } from "../../battle/Battle";
 import { SkillName } from "../../enums/SkillName";
 import { Skill, TargetType } from "../Skill";
 
@@ -9,11 +10,9 @@ export class AttackAction extends Skill{
    target: TargetType = TargetType.SingleEnemy;
    bpCost: number = 0;
    
-   skillEffect(user: Player, battle: Battle): string[] {
-      let messages: string[] = [];
+   skillEffect(user: Player, battle: Battle){
       for(let combatant of this.getTarget(user,battle)){
-         messages.push(combatant.takeDamage(user.stats.pAtk));
+         battle.display.addMessage(combatant.takeDamage(user.stats.strength * 1.2));
       }
-      return messages;
    }
 }

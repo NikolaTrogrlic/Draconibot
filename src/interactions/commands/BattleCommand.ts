@@ -1,8 +1,8 @@
 import { SlashCommandBuilder, TextChannel } from "discord.js";
 import { Globals } from "../../globals";
 import { CommandBase } from "../base/CommandBase";
-import { Battle } from "../../models/Battle";
 import { Monsters } from "../../models/monsters/Monsters";
+import { Battle } from "../../models/battle/Battle";
 
 export enum BattleOptions {
   Start = "start",
@@ -41,7 +41,6 @@ export class BattleCommand extends CommandBase {
             ...party.partyMembers,
             ...Monsters.getMonstersForLocation(location)
           );
-          battle.battleStart();
           globals.battles.push(battle);
         }
       } else {
@@ -51,7 +50,6 @@ export class BattleCommand extends CommandBase {
           player!,
           ...Monsters.getMonstersForLocation(location)
         );
-        battle.battleStart();
         globals.battles.push(battle);
       }
     }

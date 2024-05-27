@@ -8,7 +8,7 @@ export class Monsters {
   static createPlainsMonster(): Monster {
     const randomNumber = getRandomPercent();
 
-    if (randomNumber < 20) {
+    if (randomNumber < 80) {
       return new GoldenSlime();
     } else {
       return new Slime();
@@ -60,7 +60,7 @@ export class Monsters {
     for (let i = 0; i < monsters.length; i++) {
         if(hearts.length > 0){
             let fetchIndex = getRandomPercent() % hearts.length;
-            monsters[i].nickname = `${monsters[i].name} ${hearts[fetchIndex]}`;
+            monsters[i].nickname = `${hearts[fetchIndex]} ${monsters[i].name}`;
             hearts.splice(fetchIndex,1);
         }
     }

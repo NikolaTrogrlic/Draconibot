@@ -10,7 +10,7 @@ import { RisingSlash } from "../skills/freelancer/RisingSlash"
 export class Freelancer extends Job{
 
     constructor() {
-        const stats = new Stats({HP:5,armor:10,resistance:10,pAtk:5,mAtk:5,luck:10,speed:5});
+        const stats = new Stats({HP:10,strength:5,magic:5,luck:10,speed:5});
         const classElement = ElementalType.Earth;
 
         const unlockablePassives = {
@@ -21,7 +21,7 @@ export class Freelancer extends Job{
         };
 
         const unlockableSkills = {
-            2: new CrossCut(),
+            1: new CrossCut(),
             4: new RisingSlash()
         }
 

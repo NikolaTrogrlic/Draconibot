@@ -1,16 +1,17 @@
-import { Battle } from "../../Battle";
+
 import { Stats } from "../../Stats";
+import { Battle } from "../../battle/Battle";
 import { ElementalType } from "../../enums/ElementalType";
 import { Monster } from "../Monster";
 
 export class Slime extends Monster{
 
    constructor(){
-      super("Slime", 4, new Stats({HP: 15, armor: 5, resistance: 0, pAtk: 10, mAtk: 10, luck: 0, speed: 10}));
-      this.weaknesses = [ElementalType.Fire]
+      super("Slime", 4, new Stats({HP: 20, strength: 6, magic: 6, luck: 0, speed: 6}));
+      this.weaknesses = [ElementalType.Fire, ElementalType.Wind]
    }
 
-   performCombatTurn(battle: Battle): string[] {
-      return [this.attackRandomPlayer(battle)];
+   performCombatTurn(battle: Battle){
+      battle.display.addMessage(this.attackRandomPlayer(battle));
    }
 }

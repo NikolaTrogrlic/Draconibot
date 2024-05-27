@@ -10,6 +10,7 @@ import { Monsters } from "../../models/monsters/Monsters";
 import { Player } from "../../models/Player";
 import { ButtonType } from "../ButtonType";
 import { ButtonBase } from "../base/ButtonBase";
+import { Combatant } from "../../models/Combatant";
 
 export class BattleAgain extends ButtonBase {
   
@@ -34,30 +35,21 @@ export class BattleAgain extends ButtonBase {
       const location = Monsters.getLocationForLevel(player!.level);
 
       if (previousBattle && previousBattle.battleInProgress == false) {
+        previousBattle.combatants = [];
         if (player!.partyID) {
           const party = globals.getPlayerParty(player!);
           if (party) {
             for (let partyMember of party.partyMembers) {
-              let index = previousBattle.combatants.findIndex(
-                (x) => x instanceof Player && x.userID == partyMember.userID
-              );
-              if (index == -1) {
-                previousBattle.combatants.push(partyMember);
-              }
+              previousBattle.combatants.push(partyMember);
             }
           }
         } else {
-          let index = previousBattle.combatants.findIndex(
-            (x) => x instanceof Player && x.userID == player!.userID
-          );
-          if (index == -1) {
-            previousBattle.combatants.push(player!);
-          }
+          previousBattle.combatants.push(player!);
         }
 
         const reply = await interaction.reply("Starting battle...");
         reply.delete();
-        previousBattle.startSecondBattle(
+        previousBattle.newBattle(
           location,
           Monsters.getMonstersForLocation(location)
         );

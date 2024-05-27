@@ -1,7 +1,9 @@
 import { getRandomPercent } from "../../random";
-import { Battle } from "../Battle";
 import { Combatant } from "../Combatant";
 import { Stats } from "../Stats";
+import { Battle } from "../battle/Battle";
+import { getPlayers } from "../battle/BattleUtils";
+import { CombatMessage } from "../battle/CombatMessage";
 
 export abstract class Monster extends Combatant{
 
@@ -14,15 +16,13 @@ export abstract class Monster extends Combatant{
         this.level = level;
     }
 
-    abstract performCombatTurn(battle: Battle): string[];
+    abstract performCombatTurn(battle: Battle): void;
 
-    attackRandomPlayer(battle: Battle): string{
+    attackRandomPlayer(battle: Battle): CombatMessage{
 
-        const players = battle.getPlayers();
+        const players = getPlayers(battle.combatants);
         const targetedPlayer = players[getRandomPercent() % players.length];
-        const actionReport = targetedPlayer.takeDamage(this.stats.pAtk);
-
-        return actionReport;
+        return targetedPlayer.takeDamage(this.stats.strength * 1.2);
     }
 
     isLucky(): boolean{

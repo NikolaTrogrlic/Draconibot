@@ -1,6 +1,7 @@
 import { ButtonInteraction } from "discord.js";
 import { Globals } from "../../globals"; 
 import { IGameInteraction } from "../base/IGameInteraction";
+import { BurstAction } from "../../models/skills/general/BurstAction";
 
 export class SkillButton implements IGameInteraction {
 
@@ -16,67 +17,57 @@ export class SkillButton implements IGameInteraction {
     const player = globals.getPlayerById(interaction.user.id);
     if (player) {
       let battle = globals.getPlayerBattle(player);
-      if (battle && battle.currentActionOwner == player) {
-        if (battle.currentTarget == -1) {
-          battle.currentTarget = 0;
-        }
+      if (battle) {
 
         let skill = player.generalSkills.find((x) => x.name == skillName);
 
+        if(!skill){
+          skill = player.mainJob.skills.find((x) => x.name == skillName);
+        }
+
         if (!skill) {
-          let skill = player.mainJob.skills.find((x) => x.name == skillName);
+          skill = player.subJob.skills.find((x) => x.name == skillName);
+        }
 
-          if (!skill) {
-            skill = player.subJob.skills.find((x) => x.name == skillName);
-          }
-
-          if (!skill) {
-            interaction.reply({
-              content: `${skillName} not found among equipped skills. This is probbaly the result of an error.`,
-              ephemeral: true,
-            });
-          } else {
-            if (player.bp >= skill?.bpCost) {
+        if(skill){
+          if(skill instanceof BurstAction){
+            if(player.burst >= player.maxBurst){
               await interaction.update({fetchReply: false});
-              battle.currentActionOwner = undefined;
+              battle.currentAction = undefined;
               skill.use(player, battle);
-              battle.currentTarget = -1;
-            } else {
+              battle.currentTarget = 0;
+            }
+            else{
               const reply = await interaction.reply({
-                content: `Not enough bp to perform skill. BP COST: ${skill.bpCost}`,
+                content: `Meter must be full to perform burst.`,
                 ephemeral: true,
               });
               setTimeout(() => reply.delete(), 2000);
             }
           }
-        } else {
-          if (player.bp >= skill?.bpCost) {
+          else if (player.bp >= skill?.bpCost) {
+
             await interaction.update({fetchReply: false});
-            battle.currentActionOwner = undefined;
+            battle.currentAction = undefined;
             skill.use(player, battle);
-            battle.currentTarget = -1;
-          } else {
+            battle.currentTarget = 0;
+
+          }
+          else {
             const reply = await interaction.reply({
-              content: `Not enough bp to perform skill. BP COST: ${skill.bpCost}. YOUR BP: ${player.bp}`,
+              content: `Not enough bp to perform skill. BP COST: ${skill.bpCost}`,
               ephemeral: true,
             });
             setTimeout(() => reply.delete(), 2000);
           }
         }
-      } else {
-        const reply = await interaction.reply({
-          content:
-            "Must be in a battle and must be your turn to perform actions.",
-          ephemeral: true,
-        });
-        setTimeout(() => reply.delete(), 2000);
+        else{
+          await interaction.reply({
+            content: `${skillName} not found among equipped skills. This is probbaly the result of an error.`,
+            ephemeral: true,
+          });
+        }
       }
-    } else {
-      const reply = await interaction.reply({
-        content: "Must create a character first to perform actions in battle.",
-        ephemeral: true,
-      });
-      setTimeout(() => reply.delete(), 2000);
     }
   }
 }

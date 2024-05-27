@@ -23,7 +23,7 @@ export class JobCommand extends CommandBase {
   getSlashCommand() {
     return new SlashCommandBuilder()
       .setName("job")
-      .setDescription("Perform different battle actions.")
+      .setDescription("Various commands relating to jobs.")
       .addSubcommand((option) =>
         option.setName(JobOptions.List).setDescription("Lists all jobs.")
       )

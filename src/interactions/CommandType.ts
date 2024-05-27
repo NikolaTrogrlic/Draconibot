@@ -3,4 +3,6 @@ export enum CommandType{
    Battle = "battle",
    Job = "job",
    Party = "party",
+   Info = "info",
+   SubJob = "subjob"
 }
