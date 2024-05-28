@@ -7,11 +7,12 @@ import { Monster } from "../Monster";
 export class Slime extends Monster{
 
    constructor(){
-      super("Slime", 4, new Stats({HP: 20, strength: 6, magic: 6, luck: 0, speed: 6}));
+      super("Slime", 2, new Stats({HP: 30, strength: 6, magic: 6, luck: 0, speed: 6}));
       this.weaknesses = [ElementalType.Fire, ElementalType.Wind]
    }
 
    performCombatTurn(battle: Battle){
-      battle.display.addMessage(this.attackRandomPlayer(battle));
+      let result = this.attackRandomPlayer(battle);
+      battle.display.addMessage(result.combatMessage);
    }
 }

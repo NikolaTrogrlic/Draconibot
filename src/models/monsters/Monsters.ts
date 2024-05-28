@@ -3,68 +3,99 @@ import { Slime } from "./plains/Slime";
 import { CombatLocation } from "../enums/Location";
 import { GoldenSlime } from "./plains/GoldenSlime";
 import { getRandomPercent } from "../../random";
+import { RapidReptile } from "./plains/RapidReptile";
 
-export class Monsters {
-  static createPlainsMonster(): Monster {
-    const randomNumber = getRandomPercent();
+export function createPlainsMonster(): Monster {
+  const randomNumber = getRandomPercent();
 
-    if (randomNumber < 80) {
-      return new GoldenSlime();
-    } else {
-      return new Slime();
+  if (randomNumber < 5) {
+    return new GoldenSlime();
+  }
+  else if(randomNumber < 25){
+    return new RapidReptile();
+  }
+  else {
+    return new Slime();
+  }
+}
+
+export function createDesertMonster(): Monster {
+  const randomNumber = getRandomPercent();
+
+  if (randomNumber < 20) {
+    return new GoldenSlime();
+  } else {
+    return new Slime();
+  }
+}
+
+export function getLocationForLevel(number: number): CombatLocation {
+  if (number < 5) {
+    return CombatLocation.Plains;
+  } else {
+    return CombatLocation.Desert;
+  }
+}
+
+export function createMonsters(
+  location: CombatLocation,
+  amountOfMonsters: number
+): Monster[] {
+  let monsters = [];
+
+  for (let i = 0; i < amountOfMonsters; i++) {
+    switch (location) {
+      case CombatLocation.Desert:
+      case CombatLocation.Plains:
+        monsters.push(createPlainsMonster());
+        break;
     }
   }
 
-  static createDesertMonster(): Monster {
-    const randomNumber = getRandomPercent();
-
-    if (randomNumber < 20) {
-      return new GoldenSlime();
-    } else {
-      return new Slime();
+  let hearts = ["❤️", "🧡", "💚", "💜", "🤍", "🤎", "💛", "💙"];
+  for (let i = 0; i < monsters.length; i++) {
+    if (hearts.length > 0) {
+      let fetchIndex = getRandomPercent() % hearts.length;
+      monsters[i].nickname = `${hearts[fetchIndex]} ${monsters[i].name}`;
+      hearts.splice(fetchIndex, 1);
     }
   }
 
-  static getLocationForLevel(number: number): CombatLocation {
-    if (number < 5) {
-      return CombatLocation.Plains;
-    } else {
-      return CombatLocation.Desert;
-    }
-  }
+  return monsters;
+}
 
-  static getMonstersForLocation(location: CombatLocation): Monster[] {
-    const randomPercent = getRandomPercent();
-    let amountOfMonsters = 1;
+export function getRandomEncounterMonsterCount(partyMemberCount: number): number {
+  const randomPercent = getRandomPercent();
 
-    if (randomPercent < 20) {
-      amountOfMonsters = 3;
-    } else if (randomPercent < 60) {
-      amountOfMonsters = 2;
-    }
+  let amountOfMonsters = 1;
 
-    let monsters = [];
-
-    for (let i = 0; i < amountOfMonsters; i++) {
-      switch (location) {
-        case CombatLocation.Plains:
-          monsters.push(this.createPlainsMonster());
-          break;
-        case CombatLocation.Desert:
-          monsters.push(this.createDesertMonster());
-          break;
+  switch (partyMemberCount) {
+    case 1: {
+      if (randomPercent < 5) {
+        amountOfMonsters = 3;
+      } else if (randomPercent < 50) {
+        amountOfMonsters = 2;
       }
+      break;
     }
-
-    let hearts = ["❤️", "🧡", "💚", "💜", "🤍", "🤎", "💛", "💙"];
-    for (let i = 0; i < monsters.length; i++) {
-        if(hearts.length > 0){
-            let fetchIndex = getRandomPercent() % hearts.length;
-            monsters[i].nickname = `${hearts[fetchIndex]} ${monsters[i].name}`;
-            hearts.splice(fetchIndex,1);
-        }
+    case 2: {
+      if (randomPercent < 30) {
+        amountOfMonsters = 3;
+      } else if (randomPercent < 100) {
+        amountOfMonsters = 2;
+      }
+      break;
     }
-
-    return monsters;
+    case 3:
+    case 4: {
+      if (randomPercent < 50) {
+        amountOfMonsters = 4;
+      } else if (randomPercent < 100) {
+        amountOfMonsters = 3;
+      }
+      break;
+    }
   }
+
+  return amountOfMonsters;
 }

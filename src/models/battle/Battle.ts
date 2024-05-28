@@ -154,15 +154,11 @@ export class Battle {
     async monsterTurn(monster: Monster) {
 
        monster.performCombatTurn(this);
-
        this.display.title = `${monster.nickname}'s turn.`;
        this.display.color = 16711680;
-
-       const embed = this.display.getTurnDisplay(this.combatants);
        monster.actions--;
 
-       await this.display.updateDisplay(embed);
-       setTimeout(() => this.nextAction(), (this.display.messages.length * this.display.messageDisplayDuration));
+       await this.showAndAnimateMessages();
     }
 
     async displayAction(actionUser: Combatant) {
@@ -177,7 +173,10 @@ export class Battle {
         actionUser.actions--;
 
         this.display.title = `${actionUser.nickname}'s turn.`;
+        await this.showAndAnimateMessages();
+    }
 
+    async showAndAnimateMessages(){
         if(this.display.isShowingMessagesOneByOne){
             for(let i = 0; i < this.display.messages.length; i++){
                 let currentlyDisplayedMessages = this.display.messages.slice(0, i + 1);
@@ -237,7 +236,7 @@ export class Battle {
         this.currentTarget = 0;
         this.display.title = `${player.nickname}'s turn`;
         let bpMessage = "BP: ";
-        for(let i = 0;i  <  5; i++){
+        for(let i = 0;i  <  player.maxBP; i++){
             if(i < player.bp){
                 bpMessage += " 🟠";
             }

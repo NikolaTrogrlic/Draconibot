@@ -11,6 +11,7 @@ export class RisingSlash extends Skill{
    name: SkillName = SkillName.RisingSlash;
    target: TargetType = TargetType.SingleEnemy;
    bpCost: number = 2;
+   description: string = "1 BP - Deals [1.3x STR] wind damage."
    
    skillEffect(user: Player, battle: Battle){
       
@@ -26,7 +27,9 @@ export class RisingSlash extends Skill{
       battle.display.addMessage(message);
 
       for(let combatant of this.getTarget(user,battle)){
-         battle.display.addMessage(combatant.takeDamage(user.stats.strength * 1.3, ElementalType.Wind));
+
+         let result = combatant.takeDamage(user.stats.strength * 1.3, ElementalType.Wind);
+         battle.display.addMessage(result.combatMessage);
       }
    }
 }

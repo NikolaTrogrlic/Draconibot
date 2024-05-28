@@ -1,7 +1,6 @@
 import { Job } from "./Job";
 import { JobName } from "../enums/JobName";
 import { Cleric } from "./Cleric";
-import { Freelancer } from "./Freelancer";
 import { Knight } from "./Knight";
 import { Pyromancer } from "./Pyromancer";
 
@@ -9,16 +8,13 @@ export class Jobs {
 
     //Insert unlock levels here
     static jobUnlockLevels: Record<number, JobName[]> = {
-      1 : [JobName.Freelancer, JobName.Knight, JobName.Cleric, JobName.Pyromancer],
+      1 : [JobName.Knight, JobName.Cleric, JobName.Pyromancer],
       5 : [JobName.Gunslinger]
     }
   
     //Allocate 40% to stat modifiers.
     static makeJob(name: JobName): Job | undefined {
       switch (name) {
-        case JobName.Freelancer: {
-            return new Freelancer();
-        }
         case JobName.Knight: {
           return new Knight();
         }

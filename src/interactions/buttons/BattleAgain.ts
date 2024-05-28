@@ -6,11 +6,9 @@ import {
   TextChannel,
 } from "discord.js";
 import { Globals } from "../../globals";
-import { Monsters } from "../../models/monsters/Monsters";
-import { Player } from "../../models/Player";
+import { createMonsters, getLocationForLevel, getRandomEncounterMonsterCount } from "../../models/monsters/Monsters";
 import { ButtonType } from "../ButtonType";
 import { ButtonBase } from "../base/ButtonBase";
-import { Combatant } from "../../models/Combatant";
 
 export class BattleAgain extends ButtonBase {
   
@@ -32,7 +30,7 @@ export class BattleAgain extends ButtonBase {
 
     if (player!.battleID) {
       const previousBattle = globals.getPlayerBattle(player!);
-      const location = Monsters.getLocationForLevel(player!.level);
+      const location = getLocationForLevel(player!.level);
 
       if (previousBattle && previousBattle.battleInProgress == false) {
         previousBattle.combatants = [];
@@ -51,7 +49,7 @@ export class BattleAgain extends ButtonBase {
         reply.delete();
         previousBattle.newBattle(
           location,
-          Monsters.getMonstersForLocation(location)
+          createMonsters(location, getRandomEncounterMonsterCount(previousBattle.combatants.length))
         );
       } else {
         const reply = await interaction.reply(

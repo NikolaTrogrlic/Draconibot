@@ -12,7 +12,8 @@ export class AttackAction extends Skill{
    
    skillEffect(user: Player, battle: Battle){
       for(let combatant of this.getTarget(user,battle)){
-         battle.display.addMessage(combatant.takeDamage(user.stats.strength * 1.2));
+         let result = combatant.takeDamage(user.stats.strength * 1.2);
+         battle.display.addMessage(result.combatMessage);
       }
    }
 }

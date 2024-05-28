@@ -19,6 +19,7 @@ export abstract class Skill{
     name: SkillName = SkillName.Attack;
     target: TargetType = TargetType.SingleEnemy;
     bpCost: number = 1;
+    description: string = "";
 
     use(user:Player, battle: Battle){
         user.bp -= this.bpCost;

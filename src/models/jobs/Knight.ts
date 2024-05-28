@@ -4,6 +4,8 @@ import { JobName } from "../enums/JobName";
 import { PassiveName } from "../enums/PassiveName";
 import { Passive } from "../Passive";
 import { ElementalType } from "../enums/ElementalType";
+import { CrossCut } from "../skills/freelancer/CrossCut";
+import { RisingSlash } from "../skills/freelancer/RisingSlash";
 
 export class Knight extends Job{
 
@@ -16,6 +18,8 @@ export class Knight extends Job{
         };
 
         const unlockableSkills = {
+            1: new CrossCut(),
+            2: new RisingSlash(),
             
         }
 

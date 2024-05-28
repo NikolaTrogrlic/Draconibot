@@ -16,11 +16,13 @@ export class BurstAction extends Skill{
    
    skillEffect(user: Player, battle: Battle){
       switch(user.mainJob.name){
-         case JobName.Freelancer:
+         case JobName.Knight:
             {
                battle.display.addMessage(new CombatMessage(`🌪️ **A powerful storm is summoned beneath ${user.nickname}'s enemies!** 🌪️\n`));
                for(let combatant of this.getTarget(user,battle, TargetType.AllEnemies)){
-                  battle.display.addMessage(combatant.takeDamage(user.stats.strength * 2, ElementalType.Wind));
+                  
+                  let result = combatant.takeDamage(user.stats.strength * 2, ElementalType.Wind);
+                  battle.display.addMessage(result.combatMessage);
                }
                break;
             }

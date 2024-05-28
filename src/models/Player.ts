@@ -7,10 +7,10 @@ import { Jobs } from "./jobs/Jobs";
 import { Skill } from "./skills/Skill";
 import { AttackAction } from "./skills/general/AttackAction";
 import { DefendAction } from "./skills/general/DefendAction";
-import { Freelancer } from "./jobs/Freelancer";
 import { Knight } from "./jobs/Knight";
 import { BurstAction } from "./skills/general/BurstAction";
 import { FleeAction } from "./skills/general/FleeAction";
+import { Pyromancer } from "./jobs/Pyromancer";
 
 export class Player extends Combatant {
   constructor(name: string, id: string) {
@@ -28,22 +28,21 @@ export class Player extends Combatant {
 
     this.userID = id;
     this.jobs = Jobs.getJobsForLevel(1);
-    this.changeMainJob(JobName.Freelancer);
-    this.changeSubJob(JobName.Knight);
+    this.changeMainJob(JobName.Knight);
+    this.changeSubJob(JobName.Cleric);
     this.burst = 0;
     this.maxBurst = 100;
   }
 
   level: number = 1;
   exp: number = 0;
-  mainJob: Job = new Freelancer();
-  subJob: Job = new Knight();
+  mainJob: Job = new Knight();
+  subJob: Job = new Pyromancer();
   jobs: Job[];
   burst: number;
   maxBurst: number;
   generalSkills: Skill[] = [new AttackAction(), new DefendAction(),new FleeAction(), new BurstAction()];
   unlockedPassives: Passive[] = [];
-  equippedPassives: Passive[] = [];
   partyID?: string;
   userID: string = "";
 

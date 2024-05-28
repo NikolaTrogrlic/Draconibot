@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, TextChannel } from "discord.js";
 import { Globals } from "../../globals";
 import { CommandBase } from "../base/CommandBase";
-import { Monsters } from "../../models/monsters/Monsters";
+import { createMonsters, getLocationForLevel, getRandomEncounterMonsterCount } from "../../models/monsters/Monsters";
 import { Battle } from "../../models/battle/Battle";
 
 export enum BattleOptions {
@@ -30,7 +30,7 @@ export class BattleCommand extends CommandBase {
     if (interaction.channel && interaction.channel instanceof TextChannel) {
       const reply = await interaction.reply("Starting battle...");
       setTimeout(() => reply.delete(), 3000);
-      let location = Monsters.getLocationForLevel(player!.level);
+      let location = getLocationForLevel(player!.level);
 
       if (player!.partyID) {
         const party = globals.getPlayerParty(player!);
@@ -39,7 +39,7 @@ export class BattleCommand extends CommandBase {
             interaction.channel,
             location,
             ...party.partyMembers,
-            ...Monsters.getMonstersForLocation(location)
+            ...createMonsters(location, getRandomEncounterMonsterCount(party.partyMembers.length))
           );
           globals.battles.push(battle);
         }
@@ -48,7 +48,7 @@ export class BattleCommand extends CommandBase {
           interaction.channel,
           location,
           player!,
-          ...Monsters.getMonstersForLocation(location)
+          ...createMonsters(location, getRandomEncounterMonsterCount(1))
         );
         globals.battles.push(battle);
       }
