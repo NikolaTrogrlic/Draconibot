@@ -1,3 +1,4 @@
+import { Combatant } from "../Combatant";
 import { CombatMessage } from "./CombatMessage";
 
 export class TakeDamageResult{
@@ -7,8 +8,10 @@ export class TakeDamageResult{
    wasDefeated: boolean = false;
    weaknessWasHit: boolean = false;
    resistanceWasHit: boolean = false;
+   damagedCharacter: Combatant;
 
-   constructor(message: CombatMessage) {
-      this.combatMessage = message;
+   constructor(damagedCharacter: Combatant) {
+      this.combatMessage = new CombatMessage("");
+      this.damagedCharacter = damagedCharacter;
    }
 }

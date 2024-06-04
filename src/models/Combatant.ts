@@ -3,6 +3,7 @@ import { CombatMessage } from "./battle/CombatMessage";
 import { TakeDamageResult } from "./battle/ActionResults";
 import { ElementalType } from "./enums/ElementalType";
 import { Passive } from "./Passive";
+import { StatusEffect } from "./StatusEffect";
 
 export class Combatant{
 
@@ -18,6 +19,8 @@ export class Combatant{
     isFleeing: boolean;
     passives: Passive[] = [];
     isDefeated: boolean = false;
+    buffs: StatusEffect[] = [];
+    debuffs: StatusEffect[] = [];
     weaknesses: ElementalType[] = [];
     resistances: ElementalType[] = [];
     
@@ -43,71 +46,26 @@ export class Combatant{
         }
     }
 
-    takeDamage(amount: number, damageType: ElementalType = ElementalType.Physical): TakeDamageResult{
-
-        let takeDamageResult = this.beforeTakingDamage(amount, damageType)
-
-        if(this.stats.HP > 0){
-            
-            takeDamageResult.combatMessage.message = `Deals **${takeDamageResult.damageTaken}** ${damageType} damage to ${this.nickname}.`;
-            this.stats.HP -= takeDamageResult.damageTaken;
-
-            if(takeDamageResult.weaknessWasHit){
-                takeDamageResult.combatMessage.message = `${takeDamageResult.combatMessage.message} [${damageType} **WEAKNESS**]`;
-            }
-            else if(takeDamageResult.resistanceWasHit){
-                takeDamageResult.combatMessage.message = `${takeDamageResult.combatMessage.message} [${damageType} **RESIST**]`;
-            }
-            
-            takeDamageResult = this.afterTakingDamage(takeDamageResult)
-        }
-
-        return takeDamageResult;
-    }
-
     heal(amount: number){
+        amount = Math.round(amount);
         this.stats.HP += amount;
         if(this.stats.maxHP < this.stats.HP){
             this.stats.HP = this.stats.maxHP;
         }
     }
-
-    beforeTakingDamage(damageTaken: number,  damageType: ElementalType): TakeDamageResult{
-
-        let takeDamageResult = new TakeDamageResult(new CombatMessage(""));
-
-        if(this.resistances.findIndex(x => x == damageType) != -1){
-            damageTaken = damageTaken * 0.6;
-            takeDamageResult.resistanceWasHit = true;
+    
+    tickStatus(tickAmount: number){
+        for(let i= this.buffs.length-1;i >= 0;i--){
+            this.buffs[i].duration -= tickAmount;
+            if(this.buffs[i].duration < 1){
+                this.buffs.splice(i,1);
+            }
         }
-        else if(this.weaknesses.findIndex(x => x == damageType) != -1){
-            damageTaken = damageTaken * 1.4;
-            takeDamageResult.weaknessWasHit = true;
+        for(let i= this.debuffs.length-1;i >= 0;i--){
+            this.debuffs[i].duration -= tickAmount;
+            if(this.debuffs[i].duration < 1){
+                this.debuffs.splice(i,1);
+            }
         }
-        
-        if(this.isDefending){
-            damageTaken = damageTaken / 2;
-        }
-        else if(damageTaken <= 0){
-            damageTaken = 1;
-        }
-
-        damageTaken = Math.round(damageTaken);
-
-        takeDamageResult.damageTaken = damageTaken;
-
-        return takeDamageResult;
-    }
-
-    afterTakingDamage(damageResult: TakeDamageResult): TakeDamageResult{
-
-        if(this.stats.HP <= 0 && this.isDefeated == false){
-            let message = `\n - *${this.nickname} defeated !*`;
-            damageResult.combatMessage.message += message;
-            damageResult.wasDefeated = true;
-            this.isDefeated = true;
-        }
-
-        return damageResult;
     }
 }

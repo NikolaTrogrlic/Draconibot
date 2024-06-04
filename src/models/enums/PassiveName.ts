@@ -1,8 +1,8 @@
 export enum PassiveName{
-    Lucky = "Lucky",
-    EarlyBird = "Early Bird",
-    NightShift = "Night Shift",
-    Commute = "Commute",
+    ShieldBash = "Shield Bash",
+    SacredOath = "Sacred Oath",
+    AutoEarthResist = "Auto-Earth Resist",
+    BlockStance = "Block Stance",
     Protect = "Protect",
     Pyroblast = "Pyroblast",
     Mending = "Mending",

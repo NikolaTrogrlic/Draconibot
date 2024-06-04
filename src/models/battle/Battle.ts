@@ -1,4 +1,4 @@
-import { ActionRow, ActionRowBuilder, ButtonBuilder, ButtonStyle, ColorResolvable, Embed, EmbedBuilder, Message, TextChannel, ThreadChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, TextChannel } from "discord.js";
 import { average, createID, delay } from "../../utils";
 import { Combatant } from "../Combatant";
 import { Player } from "../Player";
@@ -6,21 +6,27 @@ import { CombatLocation } from "../enums/Location";
 import { Monster } from "../monsters/Monster";
 import { BattleAgain } from "../../interactions/buttons/BattleAgain";
 import { DeclineBattleAgain } from "../../interactions/buttons/DeclineBattleAgain";
-import { getAverageMonsterLevel, getMonsters, getPlayers } from "./BattleUtils";
 import { CombatUI } from "./CombatUI";
 import { CombatMessage } from "./CombatMessage";
+import { TakeDamageResult } from "./ActionResults";
+import { ElementalType } from "../enums/ElementalType";
+import { StatusEffectType } from "../enums/StatusEffectType";
+import { PassiveName } from "../enums/PassiveName";
+import { StatusEffect } from "../StatusEffect";
 
 export class Battle {
 
     id: string;
     channel: TextChannel;
-    combatants: Combatant[] = [];
-    turn: number = 0;
+    turnOrder: Combatant[] = [];
+    monsters: Monster[] = [];
+    players: Player[] = [];
+    round: number = 0;
     display: CombatUI = new CombatUI();
     bonusEXP: number = 0;
     combatLevel: number = 0;
-    currentAction: Combatant | undefined;
     defeatedMonsterCount: number = 0;
+    currentAction: Combatant | undefined;
     battleLost: boolean = true;
     currentTarget: number = -1;
     location: CombatLocation = CombatLocation.Plains;
@@ -33,37 +39,52 @@ export class Battle {
         this.newBattle(location, combatants);
     }
 
-    newBattle(location: CombatLocation, newCombatants: Combatant[]) {
-        this.combatants.push(...newCombatants);
-        this.defeatedMonsterCount = 0;
-        for (let combatant of this.combatants) {
-            combatant.battleID = this.id;
-            combatant.bp = 1;
-            combatant.isDefeated = false;
-            combatant.stats.HP = combatant.stats.maxHP;
-            if(combatant instanceof Player){
-                combatant.burst = 0;
-            }
-        }
-        this.turn = 0;
-        this.bonusEXP = 0;
-        this.combatLevel = getAverageMonsterLevel(this.combatants);
-        this.location = location;
-        this.battleStart();
+    getAverageMonsterLevel(monsters: Monster[]) {
+        return average(monsters.map(x => x.level));
     }
 
-    async battleStart() {
+    async newBattle(location: CombatLocation, newCombatants: Combatant[]) {
+        
+        this.turnOrder = [];
+        this.monsters = [];
+        this.players = [];
 
-        if (getPlayers(this.combatants).length == 0) return;
+        this.turnOrder.push(...newCombatants);
+        for (let combatant of this.turnOrder) {
+            combatant.battleID = this.id;
+            combatant.bp = 1;
+            combatant.stats.HP = combatant.stats.maxHP;
+            combatant.isDefeated = false;
+            combatant.buffs = [];
+            combatant.debuffs = [];
+            
+            if(combatant instanceof Player){
+                combatant.burst = 0;
+                if(combatant.passives.find(x => x.name == PassiveName.AutoEarthResist)){
+                    combatant.buffs.push(new StatusEffect(StatusEffectType.AutoResistEarth, 3));
+                }
+                this.players.push(combatant);
+            }
+            if(combatant instanceof Monster){
+                this.monsters.push(combatant);
+            }
+        }
+        if (this.players.length == 0) return;
 
+        this.defeatedMonsterCount = 0;
+        this.round = 0;
+        this.bonusEXP = 0;
+        this.combatLevel = this.getAverageMonsterLevel(this.monsters);
+        this.location = location;
         this.battleInProgress = true;
+
+        //Setup the initial display
         this.display.clearDisplayData();
         this.display.title = `Encounter !`;
         this.display.addMessage(new CombatMessage(`- Enemies appear !`));
         this.display.color = 0xFF0000;
         this.display.location = this.location;
-        const battleUI = this.display.getTurnDisplay(this.combatants);
-
+        const battleUI = this.display.getTurnDisplay(this.monsters,this.players);
         if (!this.display.mainDisplayMessage) {
             let message = await this.channel.send({embeds: [battleUI]});
             this.display.mainDisplayMessage = message;
@@ -72,67 +93,85 @@ export class Battle {
             this.display.updateDisplay(battleUI);
         }
         
-        setTimeout(() => this.setNewTurn(),1000);
+        //Start the first round of combat
+        setTimeout(() => this.newRound(),1000);
     }
 
-    setNewTurn() {
-        this.turn++;
-        this.combatants.sort((x: Combatant, y: Combatant) => (y.stats.speed - x.stats.speed));
-        for (let i = 0; i < this.combatants.length; i++) {
-            if (i == 0 && this.combatants.length > 1) {
-                if (this.combatants[0].stats.speed >= (2 * this.combatants[1].stats.speed)) {
-                    this.combatants[0].actions = 2;
+    newRound() {
+        this.round++;
+        this.turnOrder.sort((x: Combatant, y: Combatant) => (y.stats.speed - x.stats.speed));
+        for (let i = 0; i < this.turnOrder.length; i++) {
+            if (i == 0 && this.turnOrder.length > 1) {
+                if (this.turnOrder[0].stats.speed >= (2 * this.turnOrder[1].stats.speed)) {
+                    this.turnOrder[0].actions = 2;
                 }
                 else {
-                    this.combatants[0].actions = 1;
+                    this.turnOrder[0].actions = 1;
                 }
             }
             else {
-                this.combatants[i].actions = 1;
+                this.turnOrder[i].actions = 1;
             }
-            this.combatants[i].increaseBpBy(1);
-            this.combatants[i].isDefending = false;
-            this.combatants[i].isFleeing = false;
+            this.turnOrder[i].increaseBpBy(1);
+            this.turnOrder[i].isDefending = false;
+            this.turnOrder[i].isFleeing = false;
         }
         this.nextAction();
     }
 
-    nextAction() {
-        this.display.clearDisplayData();
+    removeDefeatedOrFleeingCombatant(combatant: Combatant){
 
-        //Removes dead combatants from the battle
-        const combatants = this.combatants.filter(x => x.isDefeated || x.isFleeing);
-        for (let combatant of combatants) {
-            let removeIndex = this.combatants.indexOf(combatant);
-            if (combatant instanceof Monster) {
-                if(combatant.isFleeing == false){
-                    this.defeatedMonsterCount++;
-                    if (combatant.bonusEXP > 0 && (this.combatLevel + 4 > combatant.level && this.combatLevel - 4 < combatant.level)) {
-                        this.bonusEXP += combatant.bonusEXP;
-                    }
-                }
-                this.combatants.splice(removeIndex, 1);
-                if (getMonsters(this.combatants).length == 0) {
-                    this.display.addMessage(new CombatMessage(`All enemies defeated.\n`));
-                    this.battleLost = false;
-                    this.battleEnd();
-                    return;
-                }
+        if((combatant.isFleeing || combatant.isDefeated) == false) return;
+
+        let removeIndex = this.turnOrder.indexOf(combatant);
+        
+        if(removeIndex != -1){
+            this.turnOrder.splice(removeIndex, 1);
+        }
+
+        if(combatant instanceof Monster){
+            let removeMonsterIndex = this.monsters.indexOf(combatant);
+            if(removeMonsterIndex != -1){
+                this.monsters.splice(removeMonsterIndex, 1);
             }
-            else if (combatant instanceof Player) {
-                combatant.stats.HP = combatant.stats.maxHP;
-                this.combatants.splice(removeIndex, 1);
-                if (getPlayers(this.combatants).length == 0) {
-                    this.display.addMessage(new CombatMessage(`Battle lost.`));
-                    this.battleLost = true;
-                    this.battleEnd();
-                    return;
+            if(combatant.isFleeing == false){
+                this.defeatedMonsterCount++;
+                if (combatant.bonusEXP > 0 && (this.combatLevel + 4 > combatant.level && this.combatLevel - 4 < combatant.level)) {
+                    this.bonusEXP += combatant.bonusEXP;
                 }
             }
         }
+        else if(combatant instanceof Player){
+            let removePlayerIndex = this.players.indexOf(combatant);
+            if(removePlayerIndex != -1){
+                this.players.splice(removePlayerIndex, 1);
+            }
+            combatant.stats.HP = combatant.stats.maxHP;
+        }
+    }
 
-        //Gives a turn to the next person in the turn order.
-        for (const combatant of this.combatants) {
+    nextAction() {
+
+        this.display.clearDisplayData();
+
+        for (let i = this.turnOrder.length - 1;i >= 0;i--) {
+            this.removeDefeatedOrFleeingCombatant(this.turnOrder[i]);
+        }
+
+        if (this.monsters.length == 0) {
+            this.display.addMessage(new CombatMessage(`All enemies defeated.\n`));
+            this.battleLost = false;
+            this.battleEnd();
+            return;
+        }
+        else if (this.players.length == 0) {
+            this.display.addMessage(new CombatMessage(`Battle lost.`));
+            this.battleLost = true;
+            this.battleEnd();
+            return;
+        }
+
+        for (const combatant of this.turnOrder) {
             if (combatant.actions > 0) {
                 this.currentAction = combatant;
                 if (combatant instanceof Player) {
@@ -146,13 +185,13 @@ export class Battle {
             }
         }
 
-        //When no combatants have actions left, start a new turn.
-        this.setNewTurn();
+        this.newRound();
         return;
     }
 
     async monsterTurn(monster: Monster) {
 
+       monster.tickStatus(1);
        monster.performCombatTurn(this);
        this.display.title = `${monster.nickname}'s turn.`;
        this.display.color = 16711680;
@@ -186,15 +225,15 @@ export class Battle {
                         let messagesToShow = currentlyDisplayedMessages;
                         let delayBetweenMessages = delay(messagesToShow[lastAddedMessageIndex].frameDuration);
                         messagesToShow[lastAddedMessageIndex].message = frame;
-                        this.display.getTurnDisplay(this.combatants, messagesToShow);
+                        this.display.getTurnDisplay(this.monsters,this.players, messagesToShow);
                         
-                        let embed= this.display.getTurnDisplay(this.combatants, currentlyDisplayedMessages);
+                        let embed= this.display.getTurnDisplay(this.monsters,this.players, currentlyDisplayedMessages);
                         await this.display.updateDisplay(embed);
                         await delayBetweenMessages;
                     }
                 }
                 else{
-                    let embed= this.display.getTurnDisplay(this.combatants, currentlyDisplayedMessages);
+                    let embed= this.display.getTurnDisplay(this.monsters,this.players, currentlyDisplayedMessages);
                     await this.display.updateDisplay(embed);
                     await delay(250);
                 }
@@ -202,7 +241,7 @@ export class Battle {
             setTimeout(() => this.nextAction(), (this.display.messages.length * this.display.messageDisplayDuration));
         }
         else{
-            const embed= this.display.getTurnDisplay(this.combatants);
+            const embed= this.display.getTurnDisplay(this.monsters,this.players);
             await this.display.updateDisplay(embed);
             setTimeout(() => this.nextAction(), (this.display.messages.length * this.display.messageDisplayDuration));
         }
@@ -210,13 +249,12 @@ export class Battle {
 
     getTargetingRow(): ActionRowBuilder<ButtonBuilder>{
         const targetRow = new ActionRowBuilder<ButtonBuilder>();
-        const monsters = getMonsters(this.combatants);
         let buttons = [];
 
-        for (let i = 0; i < monsters.length; i++) {
+        for (let i = 0; i < this.monsters.length; i++) {
             let button = new ButtonBuilder()
             .setCustomId(`${i}`)
-            .setLabel(`${monsters[i].nickname}`);
+            .setLabel(`${this.monsters[i].nickname}`);
 
             if(i == this.currentTarget){
                 button.setStyle(ButtonStyle.Danger);
@@ -234,6 +272,7 @@ export class Battle {
 
     async playerTurn(player: Player) {
         this.currentTarget = 0;
+        player.tickStatus(1);
         this.display.title = `${player.nickname}'s turn`;
         let bpMessage = "BP: ";
         for(let i = 0;i  <  player.maxBP; i++){
@@ -245,7 +284,7 @@ export class Battle {
             }
         }
         this.display.addMessage(new CombatMessage(bpMessage),new CombatMessage(`Burst: **${player.burst}%**`));
-        const embed = this.display.getTurnDisplay(this.combatants);
+        const embed = this.display.getTurnDisplay(this.monsters,this.players);
         const targetRow = this.getTargetingRow();
 
         const generalSkillsRow = new ActionRowBuilder<ButtonBuilder>();
@@ -289,8 +328,7 @@ export class Battle {
         this.battleInProgress = false;
         this.display.title = `Battle Ended`;
         let victoryMessage = " ";
-        const players = getPlayers(this.combatants);
-        for (let player of players) {
+        for (let player of this.players) {
             if (this.battleLost == false) {
                 victoryMessage += player.giveExp(this.combatLevel, this.defeatedMonsterCount, this.bonusEXP);
             }
@@ -298,7 +336,80 @@ export class Battle {
         }
         this.display.addMessage(new CombatMessage(victoryMessage));
         const battleAgainOptions = new ActionRowBuilder<ButtonBuilder>().addComponents(DeclineBattleAgain.button(), BattleAgain.button());
-        const embed = this.display.getTurnDisplay(this.combatants);
+        const embed = this.display.getTurnDisplay(this.monsters,this.players);
         await this.display.updateDisplay(embed, [battleAgainOptions]);
+    }
+
+    dealDamageToCombatant(combatant: Combatant, damageTaken: number, damageType: ElementalType = ElementalType.Physical): TakeDamageResult{
+
+        let result = new TakeDamageResult(combatant);
+        
+        if(combatant instanceof Player){
+            for(let player of this.players){
+                if(player.userID != combatant.userID){
+                    for(let buff of player.buffs){
+                        if(player.stats.HP > 0 && buff.type == StatusEffectType.HeroicGuard){
+                            result.damagedCharacter = player;
+                            result.combatMessage.message += `**${player.nickname} blocks the hit for ${combatant.nickname}**\n`;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if(damageType == ElementalType.Physical){
+            let status = result.damagedCharacter.buffs.find(x => x.type == StatusEffectType.ArmorUp);
+            if(status){
+                damageTaken = damageTaken * 0.8;
+            }
+        }
+
+        let resistances = [...result.damagedCharacter.resistances];
+        if(result.damagedCharacter.buffs.find(x => x.type == StatusEffectType.AutoResistEarth)){
+            resistances.push(ElementalType.Earth);
+        }
+
+        if(resistances.find(x => x == damageType)){
+            damageTaken = damageTaken * 0.7;
+            result.resistanceWasHit = true;
+        }
+        else if(result.damagedCharacter.weaknesses.findIndex(x => x == damageType) != -1){
+            damageTaken = damageTaken * 1.3;
+            result.weaknessWasHit = true;
+        }
+        
+        if(result.damagedCharacter.isDefending || result.damagedCharacter.buffs.find(x => x.type == StatusEffectType.AutoGuard)){
+            damageTaken = damageTaken * 0.6;
+        }
+        else if(damageTaken <= 0){
+            damageTaken = 1;
+        }
+
+        damageTaken = Math.round(damageTaken);
+
+        result.damageTaken = damageTaken;
+
+        if(result.damagedCharacter.stats.HP > 0){
+            
+            result.combatMessage.message += `Deals **${result.damageTaken}** ${damageType} damage to ${result.damagedCharacter.nickname}.`;
+            result.damagedCharacter.stats.HP -= result.damageTaken;
+
+            if(result.weaknessWasHit){
+                result.combatMessage.message += `[${damageType} **WEAKNESS**]`;
+            }
+            else if(result.resistanceWasHit){
+                result.combatMessage.message += `[${damageType} **RESIST**]`;
+            }
+            
+            if(result.damagedCharacter.stats.HP <= 0 && result.damagedCharacter.isDefeated == false){
+                let message = `\n - *${result.damagedCharacter.nickname} defeated !*`;
+                result.combatMessage.message += message;
+                result.wasDefeated = true;
+                result.damagedCharacter.isDefeated = true;
+            }
+        }
+
+        return result;
     }
 }

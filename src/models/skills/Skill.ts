@@ -2,7 +2,6 @@
 import { Combatant } from "../Combatant";
 import { Player } from "../Player";
 import { Battle } from "../battle/Battle";
-import { getMonsters, getPlayers } from "../battle/BattleUtils";
 import { SkillName } from "../enums/SkillName";
 
 export enum TargetType{
@@ -44,9 +43,9 @@ export abstract class Skill{
 
         switch(target){
             case TargetType.AllEnemies:
-                return getMonsters(battle.combatants);
+                return battle.monsters
             case TargetType.Party:
-                return getPlayers(battle.combatants);
+                return battle.players
             case TargetType.Self:
                 {
                     let player = [];
@@ -56,28 +55,26 @@ export abstract class Skill{
             case TargetType.SingleEnemy:
                 {
                     let target = battle.currentTarget;
-                    const monsters = getMonsters(battle.combatants);
-                    if(battle.currentTarget >= monsters.length){
-                        target = monsters.length - 1;
+                    if(battle.currentTarget >= battle.monsters.length){
+                        target = battle.monsters.length - 1;
                     }
                     else if(target < 0){
                         target = 0;
                     }
                     let monster = [];
-                    monster.push(monsters[target]);
+                    monster.push(battle.monsters[target]);
                     return monster;
                 }
             case TargetType.WeakestAlly:
                 {
-                    const players = getPlayers(battle.combatants);
                     let weakestPlayerIndex = 0;
-                    for(let i = 0; i < players.length;i++){
-                        if(weakestPlayerIndex != i && players[weakestPlayerIndex].stats.HP > players[i].stats.HP){
+                    for(let i = 0; i < battle.players.length;i++){
+                        if(weakestPlayerIndex != i && battle.players[weakestPlayerIndex].stats.HP > battle.players[i].stats.HP){
                             weakestPlayerIndex = i;
                         }
                     }
                     let weaklings = [];
-                    weaklings.push(players[weakestPlayerIndex]);
+                    weaklings.push(battle.players[weakestPlayerIndex]);
                     return weaklings;
                 }
             case TargetType.None:

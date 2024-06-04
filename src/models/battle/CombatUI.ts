@@ -5,9 +5,10 @@ import {
   EmbedBuilder,
   Message,
 } from "discord.js";
-import { getPlayers, getMonsters } from "./BattleUtils";
 import { Combatant } from "../Combatant";
 import { CombatMessage } from "./CombatMessage";
+import { Monster } from "../monsters/Monster";
+import { Player } from "../Player";
 
 export class CombatUI {
 
@@ -34,7 +35,7 @@ export class CombatUI {
     this.messages.push(...messages);
   }
 
-  getTurnDisplay(combatants: Combatant[], messages: CombatMessage[] = this.messages): EmbedBuilder {
+  getTurnDisplay(monsters: Monster[], players: Player[], messages: CombatMessage[] = this.messages): EmbedBuilder {
     let description = "";
     for (let i = 0; i < this.maximumMessageCount; i++) {
       if (i < messages.length) {
@@ -49,7 +50,7 @@ export class CombatUI {
       .setDescription(description)
       .setColor(this.color);
 
-    for (let partyMember of getPlayers(combatants)) {
+    for (let partyMember of players) {
       embed.addFields({
         name: `${partyMember.nickname}`,
         value: `${partyMember.stats.HP}/${partyMember.stats.maxHP} HP`,
@@ -59,7 +60,7 @@ export class CombatUI {
 
     embed.addFields({ name: " ", value: " " });
 
-    for (let monster of getMonsters(combatants)) {
+    for (let monster of monsters) {
       if (monster.stats.HP > 0) {
         embed.addFields({
           name: `${monster.nickname}`,

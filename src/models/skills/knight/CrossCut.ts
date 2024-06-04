@@ -4,6 +4,7 @@ import { Battle } from "../../battle/Battle";
 import { CombatMessage } from "../../battle/CombatMessage";
 import { SkillName } from "../../enums/SkillName";
 import { Skill, TargetType } from "../Skill";
+import { AttackAction } from "../general/AttackAction";
 
 export class CrossCut extends Skill{
 
@@ -16,13 +17,15 @@ export class CrossCut extends Skill{
       battle.display.addMessage(new CombatMessage(`***Slashes twice !\n***`));
       for(let combatant of this.getTarget(user,battle)){
 
-         let result = combatant.takeDamage(user.stats.strength * 1.2);
+         let result = battle.dealDamageToCombatant(combatant,user.stats.strength * 1.2);
          battle.display.addMessage(result.combatMessage);
+         AttackAction.checkSacredOathTrigger(user,battle);
          
          //Second hit only if enemy is still alive
          if(combatant.stats.HP > 0){
-            let result2 = combatant.takeDamage(user.stats.strength * 0.8);
+            let result2 =  battle.dealDamageToCombatant(combatant,user.stats.strength * 0.8);
             battle.display.addMessage(result2.combatMessage);
+            AttackAction.checkSacredOathTrigger(user,battle);
          }
       }
    }

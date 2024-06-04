@@ -1,7 +1,6 @@
 
 import { Stats } from "../../Stats";
 import { Battle } from "../../battle/Battle";
-import { getMonsters } from "../../battle/BattleUtils";
 import { CombatMessage } from "../../battle/CombatMessage";
 import { ElementalType } from "../../enums/ElementalType";
 import { Monster } from "../Monster";
@@ -9,7 +8,7 @@ import { Monster } from "../Monster";
 export class RapidReptile extends Monster{
 
    constructor(){
-      super("Rapid Reptile", 4, new Stats({HP: 30, strength: 8, magic: 6, luck: 30, speed: 6}));
+      super("Rapid Reptile", 4, new Stats({HP: 15, strength: 8, magic: 6, luck: 30, speed: 6}));
       this.weaknesses = [ElementalType.Fire, ElementalType.Lightning]
       this.resistances = [ElementalType.Water]
    }
@@ -17,10 +16,9 @@ export class RapidReptile extends Monster{
    performCombatTurn(battle: Battle){
       battle.display.isShowingMessagesOneByOne = true;
       if(this.isLucky()){
-         let monsters = getMonsters(battle.combatants);
-         if(monsters.length > 1){
+         if(battle.monsters.length > 1){
             battle.display.addMessage(new CombatMessage("Encourages allies, raising their strength."));
-         for(let combatant of monsters){
+         for(let combatant of battle.monsters){
             if(combatant.nickname != this.nickname){
                combatant.stats.strength++;
             }

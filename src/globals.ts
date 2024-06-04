@@ -35,7 +35,7 @@ export class Globals{
     
 
     removeStaleBattles(){
-        const staleBattles = this.battles.filter(x => x.combatants.length == 0);
+        const staleBattles = this.battles.filter(x => x.turnOrder.length == 0);
         for(const battle of staleBattles){
             const index = this.battles.indexOf(battle, 0);
             if (index > -1) {

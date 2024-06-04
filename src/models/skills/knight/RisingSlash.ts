@@ -28,7 +28,7 @@ export class RisingSlash extends Skill{
 
       for(let combatant of this.getTarget(user,battle)){
 
-         let result = combatant.takeDamage(user.stats.strength * 1.3, ElementalType.Wind);
+         let result =  battle.dealDamageToCombatant(combatant,user.stats.strength * 1.3, ElementalType.Wind);
          battle.display.addMessage(result.combatMessage);
       }
    }

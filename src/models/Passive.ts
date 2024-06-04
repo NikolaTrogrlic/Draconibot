@@ -1,4 +1,3 @@
-import { JobName } from "./enums/JobName";
 import { PassiveName } from "./enums/PassiveName";
 
 export class Passive{

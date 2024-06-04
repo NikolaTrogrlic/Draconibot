@@ -33,24 +33,28 @@ export class BattleAgain extends ButtonBase {
       const location = getLocationForLevel(player!.level);
 
       if (previousBattle && previousBattle.battleInProgress == false) {
-        previousBattle.combatants = [];
+        let combatants = [];
         if (player!.partyID) {
           const party = globals.getPlayerParty(player!);
           if (party) {
             for (let partyMember of party.partyMembers) {
-              previousBattle.combatants.push(partyMember);
+              combatants.push(partyMember);
             }
           }
         } else {
-          previousBattle.combatants.push(player!);
+          combatants.push(player!);
         }
 
         const reply = await interaction.reply("Starting battle...");
         reply.delete();
+
+        combatants.push(...createMonsters(location, getRandomEncounterMonsterCount(combatants.length)));
+
         previousBattle.newBattle(
           location,
-          createMonsters(location, getRandomEncounterMonsterCount(previousBattle.combatants.length))
+          combatants
         );
+        
       } else {
         const reply = await interaction.reply(
           "Your party needs to be in a battle"

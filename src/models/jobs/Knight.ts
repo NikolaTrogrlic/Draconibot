@@ -4,23 +4,32 @@ import { JobName } from "../enums/JobName";
 import { PassiveName } from "../enums/PassiveName";
 import { Passive } from "../Passive";
 import { ElementalType } from "../enums/ElementalType";
-import { CrossCut } from "../skills/freelancer/CrossCut";
-import { RisingSlash } from "../skills/freelancer/RisingSlash";
+import { CrossCut } from "../skills/knight/CrossCut";
+import { RisingSlash } from "../skills/knight/RisingSlash";
+import { BoulderBlade } from "../skills/knight/BoulderBlade";
+import { HeroicGuard } from "../skills/knight/HeroicGuard";
+import { ArmorUp } from "../skills/knight/ArmorUp";
 
 export class Knight extends Job{
 
     constructor() {
-        const stats = new Stats({HP:30,strength:10,magic:0,luck:0,speed:0});
+
+        const stats = new Stats({HP:15,strength:10,magic:0,luck:10,speed:10});
         const classElement = ElementalType.Water;
 
         const unlockablePassives = {
-            3:  new Passive(PassiveName.Protect, "Gain +10 Armor. While in a party, take damage for allies below 25% HP.")
+            3:  new Passive(PassiveName.ShieldBash, "When you perform the 'Defend' action, you also perform a [0.5x STR] physical attack."),
+            5:  new Passive(PassiveName.SacredOath, "Gain a [LUCK] % chance to count as defending when performing the attack action."),
+            7:  new Passive(PassiveName.AutoEarthResist, "Gain resistance to earth at the start of battle for 3 turns."),
+            9:  new Passive(PassiveName.BlockStance, "Heal 10% of your maximum health before taking damage when defending.")
         };
 
         const unlockableSkills = {
             1: new CrossCut(),
             2: new RisingSlash(),
-            
+            4: new HeroicGuard(),
+            6: new BoulderBlade(),
+            8: new ArmorUp()
         }
 
         super(JobName.Knight, stats, classElement, unlockableSkills, unlockablePassives)
