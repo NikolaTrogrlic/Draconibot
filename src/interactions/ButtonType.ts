@@ -2,5 +2,12 @@ export enum ButtonType{
    JoinParty = "joinParty",
    DeclineParty = "declineParty",
    BattleAgain = "battleAgain",
-   DeclineBattleAgain = "declineBattleAgain"
+   DeclineBattleAgain = "declineBattleAgain",
+   QuestsMenu = "questsMenu",
+   Adventure = "Adventure",
+   ReturnToMenu = "ReturnToMenu",
+   JobsMenu = "JobsMenu",
+   SetJob = "SetJob",
+   SetSubjob = "SetSubjob",
+   SkillList = "SkillList"
 }

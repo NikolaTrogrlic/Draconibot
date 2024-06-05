@@ -8,4 +8,8 @@ export function average(values: number[]): number{
     return Math.round(avg);
 }
 
+export function wrapInAnsi(message: string): string{
+    return "```ansi\n" + message + "\n```";
+}
+
 export const delay = (ms: number) => new Promise(res => setTimeout(res, ms));

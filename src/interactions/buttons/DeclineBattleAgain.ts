@@ -7,6 +7,7 @@ import {
  import { Globals } from "../../globals";
 import { ButtonType } from "../ButtonType";
 import { ButtonBase } from "../base/ButtonBase";
+import { PlayCommand } from "../commands/PlayCommand";
  
  export class DeclineBattleAgain extends ButtonBase {
 
@@ -44,7 +45,8 @@ import { ButtonBase } from "../base/ButtonBase";
          else{
             player.battleID = undefined;
          }
-        await previousBattle.display.mainDisplayMessage?.delete();
+
+        PlayCommand.generateMainMenu(player, interaction);
 
          const index = globals.battles.indexOf(previousBattle, 0);
          if (index > -1) {

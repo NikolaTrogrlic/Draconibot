@@ -3,16 +3,15 @@ import {
   ButtonBuilder,
   ColorResolvable,
   EmbedBuilder,
-  Message,
 } from "discord.js";
-import { Combatant } from "../Combatant";
 import { CombatMessage } from "./CombatMessage";
 import { Monster } from "../monsters/Monster";
 import { Player } from "../Player";
+import { MenuHandler } from "../MenuHandler";
 
 export class CombatUI {
 
-  mainDisplayMessage?: Message;
+  UI: MenuHandler;
   title: string = "";
   messages: CombatMessage[] = [];
   color: ColorResolvable = 0x884dff;
@@ -21,6 +20,10 @@ export class CombatUI {
   messageDisplayDuration: number = 1500;
   isShowingMessagesOneByOne: boolean = false;
   isAnimatingFirstRow: boolean = false;
+
+  constructor(handler: MenuHandler) {
+    this.UI = handler;
+  }
 
   clearDisplayData() {
     this.title = "";
@@ -71,11 +74,5 @@ export class CombatUI {
     }
 
     return embed;
-  }
-
-  async updateDisplay(embed: EmbedBuilder, buttonRows: ActionRowBuilder<ButtonBuilder>[] = []){
-    if(this.mainDisplayMessage){
-      await this.mainDisplayMessage.edit({embeds: [embed], components: buttonRows});
-    }
   }
 }

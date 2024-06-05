@@ -2,6 +2,7 @@ import { StringSelectMenuInteraction } from "discord.js";
 import { Globals } from "../../globals";
 import { SelectMenuBase } from "../base/SelectMenuBase";
 import { JobName } from "../../models/enums/JobName";
+import { JobsMenu } from "../buttons/jobButtons/JobsMenu";
 
 export class SubJobSelect extends SelectMenuBase{
 
@@ -9,12 +10,15 @@ export class SubJobSelect extends SelectMenuBase{
    canOnlyPerformOutsideBattle: boolean = true;
    canOnlyPerformOnOwnTurn: boolean = false;
    
-   onSelectionPerformed(interaction: StringSelectMenuInteraction, globals: Globals): Promise<any> {
+   async onSelectionPerformed(interaction: StringSelectMenuInteraction, globals: Globals): Promise<any> {
       let player = globals.getPlayerById(interaction.user.id);
       if(player){
          player.changeSubJob(JobName[interaction.values[0] as keyof typeof JobName])
+         await JobsMenu.generateMenu(player, interaction);
       }
-      return interaction.reply({content: "Changed subjob to: " + interaction.values[0], ephemeral: true});
+      else{
+         interaction.update({fetchReply: false});
+      }
    }
    
 }

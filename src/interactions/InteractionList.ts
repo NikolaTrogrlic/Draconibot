@@ -2,12 +2,9 @@ import { CommandBase } from "./base/CommandBase";
 import { CommandType } from "./CommandType";
 import { SelectMenuBase } from "./base/SelectMenuBase";
 import { SelectMenuType } from "./SelectMenuType";
-import { BattleCommand } from "./commands/BattleCommand";
 import { MainJobSelect } from "./menus/MainJobSelect";
 import { SubJobSelect } from "./menus/SubJobSelect";
-import { JobCommand } from "./commands/JobCommand";
 import { PartyCommand } from "./commands/PartyCommand";
-import { StartCommand } from "./commands/StartCommand";
 import { ButtonBase } from "./base/ButtonBase";
 import { ButtonType } from "./ButtonType";
 import { BattleAgain } from "./buttons/BattleAgain";
@@ -16,8 +13,14 @@ import { DeclineParty } from "./buttons/DeclineParty";
 import { JoinParty } from "./buttons/JoinParty";
 import { TargetButton } from "./buttons/TargetButton";
 import { SkillButton } from "./buttons/SkillButton";
-import { InfoCommand } from "./commands/InfoCommand";
-import { SubJobCommand } from "./commands/SubJobCommand";
+import { PlayCommand } from "./commands/PlayCommand";
+import { QuestsMenu } from "./buttons/QuestsMenu";
+import { AdventureButton } from "./buttons/AdventureButton";
+import { ReturnToMenu } from "./buttons/ReturnToMenu";
+import { JobsMenu } from "./buttons/jobButtons/JobsMenu";
+import { SetJob } from "./buttons/jobButtons/SetJob";
+import { SetSubjob } from "./buttons/jobButtons/SetSubjob";
+import { SkillList } from "./buttons/jobButtons/SkillList";
 
 export const menus: { [key: string]: SelectMenuBase} = {
    [SelectMenuType.SetMainJobMenu] : new MainJobSelect(),
@@ -25,12 +28,8 @@ export const menus: { [key: string]: SelectMenuBase} = {
 };
 
 export const commands: { [key: string]: CommandBase} = {
-   [CommandType.Battle] : new BattleCommand(),
-   [CommandType.Job] : new JobCommand(),
    [CommandType.Party] : new PartyCommand(),
-   [CommandType.Start] : new StartCommand(),
-   [CommandType.Info] : new InfoCommand(),
-   [CommandType.SubJob]: new SubJobCommand(),
+   [CommandType.Play] : new PlayCommand(),
 };
 
 //Excludes skill and targeting buttons
@@ -38,7 +37,14 @@ export const buttons: {[key: string]: ButtonBase} = {
 	[ButtonType.BattleAgain]: new BattleAgain(),
    [ButtonType.DeclineBattleAgain]: new DeclineBattleAgain(),
    [ButtonType.DeclineParty]: new DeclineParty(),
-   [ButtonType.JoinParty]: new JoinParty()
+   [ButtonType.JoinParty]: new JoinParty(),
+   [ButtonType.QuestsMenu]: new QuestsMenu(),
+   [ButtonType.Adventure]: new AdventureButton(),
+   [ButtonType.ReturnToMenu]: new ReturnToMenu(),
+   [ButtonType.JobsMenu]: new JobsMenu(),
+   [ButtonType.SetJob]: new SetJob(),
+   [ButtonType.SetSubjob]: new SetSubjob(),
+   [ButtonType.SkillList]: new SkillList()
 };
 
 export const targetButton = new TargetButton();

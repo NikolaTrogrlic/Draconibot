@@ -11,9 +11,11 @@ import { Knight } from "./jobs/Knight";
 import { BurstAction } from "./skills/general/BurstAction";
 import { FleeAction } from "./skills/general/FleeAction";
 import { Pyromancer } from "./jobs/Pyromancer";
+import { MenuHandler } from "./MenuHandler";
+import { CommandInteraction } from "discord.js";
 
 export class Player extends Combatant {
-  constructor(name: string, id: string) {
+  constructor(name: string, id: string, createInteraction: CommandInteraction) {
     super(
       name,
       new Stats({
@@ -26,6 +28,7 @@ export class Player extends Combatant {
       undefined
     );
 
+    this.menu = new MenuHandler(createInteraction);
     this.userID = id;
     this.jobs = Jobs.getJobsForLevel(1);
     this.changeMainJob(JobName.Knight);
@@ -44,6 +47,7 @@ export class Player extends Combatant {
   generalSkills: Skill[] = [new AttackAction(), new DefendAction(),new FleeAction(), new BurstAction()];
   unlockedPassives: Passive[] = [];
   partyID?: string;
+  menu: MenuHandler;
   userID: string = "";
 
   updateStats(classModifiers: Stats) {

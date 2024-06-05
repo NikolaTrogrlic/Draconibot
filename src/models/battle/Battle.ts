@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, TextChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, InteractionResponse, Message, TextChannel } from "discord.js";
 import { average, createID, delay } from "../../utils";
 import { Combatant } from "../Combatant";
 import { Player } from "../Player";
@@ -13,16 +13,17 @@ import { ElementalType } from "../enums/ElementalType";
 import { StatusEffectType } from "../enums/StatusEffectType";
 import { PassiveName } from "../enums/PassiveName";
 import { StatusEffect } from "../StatusEffect";
+import { BurstAction } from "../skills/general/BurstAction";
+import { MenuHandler } from "../MenuHandler";
 
 export class Battle {
 
     id: string;
-    channel: TextChannel;
     turnOrder: Combatant[] = [];
     monsters: Monster[] = [];
     players: Player[] = [];
     round: number = 0;
-    display: CombatUI = new CombatUI();
+    display: CombatUI;
     bonusEXP: number = 0;
     combatLevel: number = 0;
     defeatedMonsterCount: number = 0;
@@ -32,8 +33,8 @@ export class Battle {
     location: CombatLocation = CombatLocation.Plains;
     battleInProgress: boolean = false;
 
-    constructor(channel: TextChannel, location: CombatLocation, ...combatants: Combatant[]) {
-        this.channel = channel;
+    constructor(battleInitiator: Player, location: CombatLocation, ...combatants: Combatant[]) {
+        this.display = new CombatUI(battleInitiator.menu);
         this.id = createID();
         this.battleInProgress = false;
         this.newBattle(location, combatants);
@@ -85,13 +86,7 @@ export class Battle {
         this.display.color = 0xFF0000;
         this.display.location = this.location;
         const battleUI = this.display.getTurnDisplay(this.monsters,this.players);
-        if (!this.display.mainDisplayMessage) {
-            let message = await this.channel.send({embeds: [battleUI]});
-            this.display.mainDisplayMessage = message;
-        }
-        else{
-            this.display.updateDisplay(battleUI);
-        }
+        this.display.UI.updateDisplay([battleUI]);
         
         //Start the first round of combat
         setTimeout(() => this.newRound(),1000);
@@ -228,13 +223,13 @@ export class Battle {
                         this.display.getTurnDisplay(this.monsters,this.players, messagesToShow);
                         
                         let embed= this.display.getTurnDisplay(this.monsters,this.players, currentlyDisplayedMessages);
-                        await this.display.updateDisplay(embed);
+                        await this.display.UI.updateDisplay([embed]);
                         await delayBetweenMessages;
                     }
                 }
                 else{
                     let embed= this.display.getTurnDisplay(this.monsters,this.players, currentlyDisplayedMessages);
-                    await this.display.updateDisplay(embed);
+                    await this.display.UI.updateDisplay([embed]);
                     await delay(250);
                 }
             }
@@ -242,7 +237,7 @@ export class Battle {
         }
         else{
             const embed= this.display.getTurnDisplay(this.monsters,this.players);
-            await this.display.updateDisplay(embed);
+            await this.display.UI.updateDisplay([embed]);
             setTimeout(() => this.nextAction(), (this.display.messages.length * this.display.messageDisplayDuration));
         }
     }
@@ -289,26 +284,49 @@ export class Battle {
 
         const generalSkillsRow = new ActionRowBuilder<ButtonBuilder>();
         for (let skill of player.generalSkills) {
-            generalSkillsRow.addComponents(new ButtonBuilder()
-                .setCustomId(skill.name)
-                .setLabel(skill.name)
-                .setStyle(ButtonStyle.Primary));
+
+            let button = new ButtonBuilder()
+            .setCustomId(skill.name)
+            .setLabel(skill.name)
+
+            if(skill instanceof BurstAction && player.burst >= player.maxBurst){
+                button.setStyle(ButtonStyle.Danger);
+            }
+            else{
+                button.setStyle(ButtonStyle.Primary);
+            }
+
+            generalSkillsRow.addComponents(button);
         }
 
         const classSkillsRow = new ActionRowBuilder<ButtonBuilder>();
         for (let skill of player.mainJob.skills) {
-            classSkillsRow.addComponents(new ButtonBuilder()
+
+            let button = new ButtonBuilder()
             .setCustomId(skill.name)
             .setLabel(skill.name)
-            .setStyle(ButtonStyle.Success));
+            .setStyle(ButtonStyle.Secondary);
+
+            if(skill.bpCost > player.bp){
+                button.setDisabled(true);
+            }
+
+            classSkillsRow.addComponents(button);
         }
 
         const subclassSkillsRow = new ActionRowBuilder<ButtonBuilder>();
         for (let skill of player.subJob.skills) {
-            subclassSkillsRow.addComponents(new ButtonBuilder()
+
+            let button = new ButtonBuilder()
                 .setCustomId(skill.name)
                 .setLabel(skill.name)
-                .setStyle(ButtonStyle.Success));
+                .setStyle(ButtonStyle.Secondary)
+
+            if(skill.bpCost > player.bp){
+                button.setDisabled(true);
+            }
+
+            subclassSkillsRow.addComponents(button);
         }
 
         let buttonRows: ActionRowBuilder<ButtonBuilder>[] = [targetRow, generalSkillsRow];
@@ -320,7 +338,7 @@ export class Battle {
             buttonRows.push(subclassSkillsRow);
         }
 
-        await this.display.updateDisplay(embed, buttonRows);
+        await this.display.UI.updateDisplay([embed], buttonRows);
     }
 
     async battleEnd() {
@@ -337,7 +355,7 @@ export class Battle {
         this.display.addMessage(new CombatMessage(victoryMessage));
         const battleAgainOptions = new ActionRowBuilder<ButtonBuilder>().addComponents(DeclineBattleAgain.button(), BattleAgain.button());
         const embed = this.display.getTurnDisplay(this.monsters,this.players);
-        await this.display.updateDisplay(embed, [battleAgainOptions]);
+        await this.display.UI.updateDisplay([embed], [battleAgainOptions]);
     }
 
     dealDamageToCombatant(combatant: Combatant, damageTaken: number, damageType: ElementalType = ElementalType.Physical): TakeDamageResult{
