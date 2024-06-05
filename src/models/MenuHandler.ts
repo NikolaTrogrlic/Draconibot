@@ -23,7 +23,9 @@ export class MenuHandler {
   async appendToDisplay(interaction: ButtonInteraction, components: ActionRowBuilder<any>[]){
    if (this.message) {
       try{
-         await this.message.edit({ components: [...this.message.components, ...components] });
+         if(components.length > 0){
+            await this.message.edit({ components: [...this.message.components, ...components] });
+         }
          if(interaction.replied == false){
             interaction.update({fetchReply: false});
          }

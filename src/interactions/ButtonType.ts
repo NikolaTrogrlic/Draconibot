@@ -9,5 +9,7 @@ export enum ButtonType{
    JobsMenu = "JobsMenu",
    SetJob = "SetJob",
    SetSubjob = "SetSubjob",
-   SkillList = "SkillList"
+   SkillList = "SkillList",
+   EquipMenu = "EquipMenu",
+   SetPassives = "SetPassives"
 }

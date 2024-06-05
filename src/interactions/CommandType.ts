@@ -1,4 +1,5 @@
 export enum CommandType{
    Party = "party",
-   Play = "play"
+   Play = "play",
+   Leave = "leave"
 }

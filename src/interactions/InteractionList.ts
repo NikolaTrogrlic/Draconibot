@@ -21,15 +21,21 @@ import { JobsMenu } from "./buttons/jobButtons/JobsMenu";
 import { SetJob } from "./buttons/jobButtons/SetJob";
 import { SetSubjob } from "./buttons/jobButtons/SetSubjob";
 import { SkillList } from "./buttons/jobButtons/SkillList";
+import { EquipMenu } from "./buttons/equipButtons/EquipMenu";
+import { PassivesSelect } from "./menus/PassivesSelect";
+import { SetPassives } from "./buttons/equipButtons/SetPassives";
+import { LeaveCommand } from "./commands/LeaveCommand";
 
 export const menus: { [key: string]: SelectMenuBase} = {
    [SelectMenuType.SetMainJobMenu] : new MainJobSelect(),
-   [SelectMenuType.SetSubJobMenu] :  new SubJobSelect()
+   [SelectMenuType.SetSubJobMenu] :  new SubJobSelect(),
+   [SelectMenuType.SetPassivesMenu]: new PassivesSelect()
 };
 
 export const commands: { [key: string]: CommandBase} = {
    [CommandType.Party] : new PartyCommand(),
    [CommandType.Play] : new PlayCommand(),
+   [CommandType.Leave]: new LeaveCommand()
 };
 
 //Excludes skill and targeting buttons
@@ -44,7 +50,9 @@ export const buttons: {[key: string]: ButtonBase} = {
    [ButtonType.JobsMenu]: new JobsMenu(),
    [ButtonType.SetJob]: new SetJob(),
    [ButtonType.SetSubjob]: new SetSubjob(),
-   [ButtonType.SkillList]: new SkillList()
+   [ButtonType.SkillList]: new SkillList(),
+   [ButtonType.EquipMenu]: new EquipMenu(),
+   [ButtonType.SetPassives]: new SetPassives()
 };
 
 export const targetButton = new TargetButton();

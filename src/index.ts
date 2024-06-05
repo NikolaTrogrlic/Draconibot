@@ -18,7 +18,7 @@ const globals: Globals = new Globals();
 
 client.once("ready", () => {
   console.log("Discord bot is ready! 🤖");
-  //deployCommands();
+  deployCommands();
 });
 
 client.on("guildCreate", async () => {

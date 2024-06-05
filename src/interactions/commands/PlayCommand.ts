@@ -5,6 +5,7 @@ import { Player } from "../../models/Player";
 import { QuestsMenu } from "../buttons/QuestsMenu";
 import { delay } from "../../utils";
 import { JobsMenu } from "../buttons/jobButtons/JobsMenu";
+import { EquipMenu } from "../buttons/equipButtons/EquipMenu";
 
 export class PlayCommand extends CommandBase {
    
@@ -69,7 +70,7 @@ export class PlayCommand extends CommandBase {
    .setColor(0x4974A5);
 
    const buttonList = new ActionRowBuilder<ButtonBuilder>()
-   .addComponents(QuestsMenu.button(),JobsMenu.button())
+   .addComponents(QuestsMenu.button(),JobsMenu.button(),EquipMenu.button())
 
    if(interaction instanceof CommandInteraction){
       player.menu.deleteAndUpdate(interaction,[embed],[buttonList]);

@@ -35,10 +35,12 @@ export class Player extends Combatant {
     this.changeSubJob(JobName.Cleric);
     this.burst = 0;
     this.maxBurst = 100;
+    this.lastLeaveCommandUse.setTime(this.lastLeaveCommandUse.getTime() - (1000 * 60 * 5));
   }
 
   level: number = 1;
   exp: number = 0;
+  lastLeaveCommandUse: Date = new Date();
   mainJob: Job = new Knight();
   subJob: Job = new Pyromancer();
   jobs: Job[];

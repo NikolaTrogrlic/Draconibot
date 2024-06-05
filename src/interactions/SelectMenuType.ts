@@ -1,4 +1,5 @@
 export enum SelectMenuType{
    SetMainJobMenu = "setMainJobMenu",
-   SetSubJobMenu = "setSubJobMenu"
+   SetSubJobMenu = "setSubJobMenu",
+   SetPassivesMenu = "setPassivesMenu"
 }
