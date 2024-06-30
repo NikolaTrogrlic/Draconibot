@@ -8,7 +8,7 @@ import { Monster } from "../Monster";
 export class GoldenSlime extends Monster{
 
    constructor(){
-      super("Golden Slime", 2, new Stats({HP: 20, strength: 5, magic: 5, luck: 40, speed: 5}));
+      super("Golden Slime", 2, new Stats({HP: 20, strength: 8, magic: 5, luck: 40, speed: 5}));
       this.bonusEXP = 20;
       this.resistances = [ElementalType.Wind,ElementalType.Physical]
       this.weaknesses = [ElementalType.Fire];

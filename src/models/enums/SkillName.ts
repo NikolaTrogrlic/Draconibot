@@ -7,5 +7,10 @@ export enum SkillName{
    RisingSlash = "Rising Slash",
    HeroicGuard = "Heroic Guard",
    BoulderBlade = "Boulder Blade",
-   ArmorUp = "Armor Up"
+   ArmorUp = "Armor Up",
+   FlameBolt = "Flame Bolt",
+   Fireball = "Fireball",
+   SunStrike = "Sun Strike",
+   FireTrap = "Fire Trap",
+   Flicker = "Flicker"
 }

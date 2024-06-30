@@ -2,13 +2,14 @@
 import { Stats } from "../../Stats";
 import { Battle } from "../../battle/Battle";
 import { CombatMessage } from "../../battle/CombatMessage";
+import { DamageModifier } from "../../enums/DamageModifier";
 import { ElementalType } from "../../enums/ElementalType";
 import { Monster } from "../Monster";
 
 export class RapidReptile extends Monster{
 
    constructor(){
-      super("Rapid Reptile", 4, new Stats({HP: 15, strength: 8, magic: 6, luck: 30, speed: 6}));
+      super("Rapid Reptile", 4, new Stats({HP: 15, strength: 10, magic: 6, luck: 30, speed: 6}));
       this.weaknesses = [ElementalType.Fire, ElementalType.Lightning]
       this.resistances = [ElementalType.Water]
    }
@@ -33,7 +34,7 @@ export class RapidReptile extends Monster{
 
             ];
             battle.display.addMessage(message);
-            let result = this.attackRandomPlayer(battle, this.stats.strength, 2);
+            let result = this.attackRandomPlayer(battle, this.stats.strength, DamageModifier.Heavy);
             battle.display.addMessage(result.combatMessage);
             
          }

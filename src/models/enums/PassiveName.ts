@@ -1,12 +1,11 @@
 export enum PassiveName{
     ShieldBash = "Shield Bash",
     SacredOath = "Sacred Oath",
-    AutoEarthResist = "Auto-Earth Resist",
+    AutoResistEarth = "Auto-Resist Earth",
     BlockStance = "Block Stance",
     Protect = "Protect",
-    Pyroblast = "Pyroblast",
-    Mending = "Mending",
-    Spellshield = "Spellshield",
-    Gospel = "Gospel",
-    Dawnbringer = "Dawnbringer"
+    HeatHaze = "Heat Haze",
+    AutoResistFire = "Auto-Resist Fire",
+    Torchlight = "Torchlight",
+    TestOfWill = "Test of Will"
 }

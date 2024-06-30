@@ -18,6 +18,7 @@ export class SetPassives extends ButtonBase {
      const player = globals.getPlayerById(interaction.user.id);
  
      if (player) {
+       player.refreshPassivesList();
        if(player.unlockedPassives.length > 0){
          let jobSelect: StringSelectMenuOptionBuilder[] = [];
        for (let passive of player.unlockedPassives) {

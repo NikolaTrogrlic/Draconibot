@@ -1,9 +1,7 @@
 import { Stats } from "./Stats";
-import { CombatMessage } from "./battle/CombatMessage";
-import { TakeDamageResult } from "./battle/ActionResults";
 import { ElementalType } from "./enums/ElementalType";
 import { Passive } from "./Passive";
-import { StatusEffect } from "./StatusEffect";
+import { EffectBase } from "./effects/EffectBase";
 
 export class Combatant{
 
@@ -19,8 +17,7 @@ export class Combatant{
     isFleeing: boolean;
     passives: Passive[] = [];
     isDefeated: boolean = false;
-    buffs: StatusEffect[] = [];
-    debuffs: StatusEffect[] = [];
+    effects: EffectBase[] = [];
     weaknesses: ElementalType[] = [];
     resistances: ElementalType[] = [];
     
@@ -55,17 +52,21 @@ export class Combatant{
     }
     
     tickStatus(tickAmount: number){
-        for(let i= this.buffs.length-1;i >= 0;i--){
-            this.buffs[i].duration -= tickAmount;
-            if(this.buffs[i].duration < 1){
-                this.buffs.splice(i,1);
+        for(let i= this.effects.length-1;i >= 0;i--){
+            this.effects[i].duration -= tickAmount;
+            if(this.effects[i].duration < 1){
+                this.effects.splice(i,1);
             }
         }
-        for(let i= this.debuffs.length-1;i >= 0;i--){
-            this.debuffs[i].duration -= tickAmount;
-            if(this.debuffs[i].duration < 1){
-                this.debuffs.splice(i,1);
-            }
+    }
+
+    giveEffect(effect: EffectBase){
+        let existingEffect = this.effects.find(x => x.name == effect.name);
+        if(existingEffect){
+            existingEffect.apply(effect.stacks, effect.duration);
+        }
+        else{
+            this.effects.push(effect);
         }
     }
 }

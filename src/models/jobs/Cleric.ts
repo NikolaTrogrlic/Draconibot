@@ -9,13 +9,10 @@ export class Cleric extends Job{
 
     constructor() {
         const stats = new Stats({HP:20,strength:0,magic:10,luck:10,speed:0});
-        const classElement = ElementalType.Light;
+        const classElement = ElementalType.Water;
 
         const unlockablePassives = {
-            3: new Passive(PassiveName.Mending,"Healing skills costing 2 BP or more have their effects doubled."),
-            5: new Passive(PassiveName.Spellshield,"Defending reduces magical damage by an additional 25%."),
-            6: new Passive(PassiveName.Gospel,"The first single target action each battle made agains t single allies targets all allies."),
-            8: new Passive(PassiveName.Dawnbringer,"Dark field turns count as Light field turns.")
+            
         };
 
         const unlockableSkills = {

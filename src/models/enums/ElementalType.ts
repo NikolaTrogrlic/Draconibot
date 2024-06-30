@@ -4,8 +4,6 @@ export enum ElementalType {
   Earth = "⛰️",
   Wind = "🌪️",
   Lightning = "⚡",
-  Light = "⚪",
-  Dark = "🌑",
   Physical = "⚔️",
 }
 

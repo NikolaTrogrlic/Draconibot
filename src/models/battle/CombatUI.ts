@@ -16,7 +16,7 @@ export class CombatUI {
   messages: CombatMessage[] = [];
   color: ColorResolvable = 0x884dff;
   location: string = "Battle.";
-  maximumMessageCount = 5;
+  maximumMessageCount = 6;
   messageDisplayDuration: number = 1500;
   isShowingMessagesOneByOne: boolean = false;
   isAnimatingFirstRow: boolean = false;
@@ -35,6 +35,15 @@ export class CombatUI {
   }
 
   addMessage(...messages: CombatMessage[]) {
+    this.messages.push(...messages);
+  }
+
+  clearScreenAndAddMessage(...messages: CombatMessage[]) {
+    if(this.messages.length < this.maximumMessageCount){
+      for(let i = this.messages.length;i < this.maximumMessageCount;i++){
+        this.messages.push(new CombatMessage("\n"));
+      }
+    }
     this.messages.push(...messages);
   }
 

@@ -3,9 +3,12 @@ import { getRandomPercent } from "../../../random";
 import { Player } from "../../Player";
 import { Battle } from "../../battle/Battle";
 import { CombatMessage } from "../../battle/CombatMessage";
+import { DamageModifier } from "../../enums/DamageModifier";
+import { ElementalType } from "../../enums/ElementalType";
 import { PassiveName } from "../../enums/PassiveName";
 import { SkillName } from "../../enums/SkillName";
-import { Skill, TargetType } from "../Skill";
+import { TargetType } from "../../enums/TargetType";
+import { Skill } from "../Skill";
 import { DefendAction } from "./DefendAction";
 
 export class AttackAction extends Skill{
@@ -19,7 +22,7 @@ export class AttackAction extends Skill{
       AttackAction.checkSacredOathTrigger(user,battle);
 
       for(let combatant of this.getTarget(user,battle)){
-         let result =  battle.dealDamageToCombatant(combatant,user.stats.strength * 1.2);
+         let result =  battle.dealDamageToCombatant(user, combatant,user.stats.strength * DamageModifier.Light, AttackAction.getNormalAttackElement(user));
          battle.display.addMessage(result.combatMessage);
       }
    }
@@ -31,5 +34,13 @@ export class AttackAction extends Skill{
          battle.display.addMessage(new CombatMessage("[Sacred Oath] Defends while attacking."));
          DefendAction.onDefendAction(user,battle);
       }
+   }
+
+   static getNormalAttackElement(user: Player): ElementalType{
+      let damageType = ElementalType.Physical;
+      if(user.passives.find(x => x.name == PassiveName.Torchlight)){
+         damageType = ElementalType.Fire;
+      }
+      return damageType;
    }
 }

@@ -10,11 +10,14 @@ import { CombatUI } from "./CombatUI";
 import { CombatMessage } from "./CombatMessage";
 import { TakeDamageResult } from "./ActionResults";
 import { ElementalType } from "../enums/ElementalType";
-import { StatusEffectType } from "../enums/StatusEffectType";
 import { PassiveName } from "../enums/PassiveName";
-import { StatusEffect } from "../StatusEffect";
 import { BurstAction } from "../skills/general/BurstAction";
-import { MenuHandler } from "../MenuHandler";
+import { ResistUp } from "../effects/WhenHitEffects/ResistUp";
+import { TriggerWhenAllyHitEffect } from "../effects/OnAllyHitEffects/TriggerWhenAllyHitEffect";
+import { TriggerWhenHitEffect } from "../effects/WhenHitEffects/TriggerWhenHitEffect";
+import { EffectBase } from "../effects/EffectBase";
+import { TriggerWhenAttackingEffect } from "../effects/OnAttackingEffects/TriggerWhenAttackingEffect";
+import { CounterAttackEffect } from "../effects/CounterAttackEffects/CounterAttackEffect";
 
 export class Battle {
 
@@ -56,13 +59,29 @@ export class Battle {
             combatant.bp = 1;
             combatant.stats.HP = combatant.stats.maxHP;
             combatant.isDefeated = false;
-            combatant.buffs = [];
-            combatant.debuffs = [];
+            combatant.effects = [];
             
             if(combatant instanceof Player){
-                combatant.burst = 0;
-                if(combatant.passives.find(x => x.name == PassiveName.AutoEarthResist)){
-                    combatant.buffs.push(new StatusEffect(StatusEffectType.AutoResistEarth, 3));
+                combatant.burst = 100;
+                for(var passive of combatant.passives){
+
+                    let battleStartEffect: EffectBase | undefined;
+                    switch (passive.name){
+                        case PassiveName.AutoResistEarth:
+                            battleStartEffect = new ResistUp("Auto-Resist Earth", 3, ElementalType.Earth);
+                        break;
+                        case PassiveName.AutoResistFire:
+                            battleStartEffect = new ResistUp("Auto-Resist Fire", 3, ElementalType.Fire)
+                        break;
+                    }
+
+                    if(battleStartEffect){
+                        if(combatant.passives.find(x => x.name == PassiveName.TestOfWill)){
+                            battleStartEffect.maxDuration++;
+                            battleStartEffect.duration++;
+                        }
+                        combatant.giveEffect(battleStartEffect);
+                    }
                 }
                 this.players.push(combatant);
             }
@@ -213,7 +232,13 @@ export class Battle {
     async showAndAnimateMessages(){
         if(this.display.isShowingMessagesOneByOne){
             for(let i = 0; i < this.display.messages.length; i++){
-                let currentlyDisplayedMessages = this.display.messages.slice(0, i + 1);
+                let startIndex = Math.floor(i / this.display.maximumMessageCount) * this.display.maximumMessageCount;
+                let endIndex = startIndex + this.display.maximumMessageCount;
+                if(endIndex > i){
+                    endIndex = i;
+                }
+
+                let currentlyDisplayedMessages = this.display.messages.slice(startIndex, i + 1);
                 let lastAddedMessageIndex = currentlyDisplayedMessages.length - 1;
                 if(currentlyDisplayedMessages[lastAddedMessageIndex].keyFrames.length > 0){
                     for(let frame of currentlyDisplayedMessages[lastAddedMessageIndex].keyFrames){
@@ -358,55 +383,58 @@ export class Battle {
         await this.display.UI.updateDisplay([embed], [battleAgainOptions]);
     }
 
-    dealDamageToCombatant(combatant: Combatant, damageTaken: number, damageType: ElementalType = ElementalType.Physical): TakeDamageResult{
+    dealDamageToCombatant(attacker:Combatant, defender: Combatant, baseDamage: number, damageType: ElementalType = ElementalType.Physical): TakeDamageResult{
 
-        let result = new TakeDamageResult(combatant);
+        let result = new TakeDamageResult(attacker,baseDamage,damageType,defender);
         
-        if(combatant instanceof Player){
+        if(defender instanceof Player){
             for(let player of this.players){
-                if(player.userID != combatant.userID){
-                    for(let buff of player.buffs){
-                        if(player.stats.HP > 0 && buff.type == StatusEffectType.HeroicGuard){
-                            result.damagedCharacter = player;
-                            result.combatMessage.message += `**${player.nickname} blocks the hit for ${combatant.nickname}**\n`;
-                            break;
+                if(player.userID != defender.userID){
+                    for(let effect of player.effects){
+                        if(effect instanceof TriggerWhenAllyHitEffect){
+                            result = effect.trigger(player, result);
                         }
                     }
                 }
             }
         }
 
-        if(damageType == ElementalType.Physical){
-            let status = result.damagedCharacter.buffs.find(x => x.type == StatusEffectType.ArmorUp);
-            if(status){
-                damageTaken = damageTaken * 0.8;
+        for(let effect of result.attacker.effects){
+            if(effect instanceof TriggerWhenAttackingEffect){
+                result = effect.trigger(result);
             }
         }
 
-        let resistances = [...result.damagedCharacter.resistances];
-        if(result.damagedCharacter.buffs.find(x => x.type == StatusEffectType.AutoResistEarth)){
-            resistances.push(ElementalType.Earth);
+        if(result.evaded){
+            result.combatMessage.message = `\n - *${result.attacker.nickname} misses the attack !*`;
+            result.damageTaken = 0;
+            return result;
         }
 
-        if(resistances.find(x => x == damageType)){
-            damageTaken = damageTaken * 0.7;
+        for(let effect of result.damagedCharacter.effects){
+            if(effect instanceof TriggerWhenHitEffect){
+                result = effect.trigger(result);
+            }
+        }
+
+        if(result.damagedCharacter.resistances.find(x => x == damageType) && result.resistanceWasHit == false){
+            result.damageTaken = result.damageTaken * 0.7;
             result.resistanceWasHit = true;
         }
-        else if(result.damagedCharacter.weaknesses.findIndex(x => x == damageType) != -1){
-            damageTaken = damageTaken * 1.3;
+        else if(result.damagedCharacter.weaknesses.find(x => x == damageType) && result.weaknessWasHit == false){
+            result.damageTaken = result.damageTaken * 1.3;
             result.weaknessWasHit = true;
         }
         
-        if(result.damagedCharacter.isDefending || result.damagedCharacter.buffs.find(x => x.type == StatusEffectType.AutoGuard)){
-            damageTaken = damageTaken * 0.6;
+        if(result.damagedCharacter.isDefending && (result.guarded == false)){
+            result.damageTaken = result.damageTaken * 0.6;
+            result.guarded = true;
         }
-        else if(damageTaken <= 0){
-            damageTaken = 1;
+        else if(baseDamage <= 0){
+            result.damageTaken = 1;
         }
 
-        damageTaken = Math.round(damageTaken);
-
-        result.damageTaken = damageTaken;
+        result.damageTaken = Math.round(result.damageTaken);
 
         if(result.damagedCharacter.stats.HP > 0){
             
@@ -425,6 +453,13 @@ export class Battle {
                 result.combatMessage.message += message;
                 result.wasDefeated = true;
                 result.damagedCharacter.isDefeated = true;
+            }
+            else{
+                for(let effect of result.damagedCharacter.effects){
+                    if(effect instanceof CounterAttackEffect){
+                        result = effect.trigger(result, this);
+                    }
+                }
             }
         }
 

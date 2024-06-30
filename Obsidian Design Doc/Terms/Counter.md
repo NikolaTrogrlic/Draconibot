@@ -1,0 +1,1 @@
+Effects that trigger when attacked.

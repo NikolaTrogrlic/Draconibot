@@ -2,9 +2,9 @@ import { getRandomPercent } from "../../random";
 import { Combatant } from "../Combatant";
 import { Stats } from "../Stats";
 import { Battle } from "../battle/Battle";
-import { CombatMessage } from "../battle/CombatMessage";
 import { TakeDamageResult } from "../battle/ActionResults";
 import { ElementalType } from "../enums/ElementalType";
+import { DamageModifier as DamageModifier } from "../enums/DamageModifier";
 
 export abstract class Monster extends Combatant{
 
@@ -19,9 +19,9 @@ export abstract class Monster extends Combatant{
 
     abstract performCombatTurn(battle: Battle): void;
 
-    attackRandomPlayer(battle: Battle,mainStat: number = this.stats.strength, damageModifier: number = 1.2, damageType: ElementalType = ElementalType.Physical ): TakeDamageResult{
+    attackRandomPlayer(battle: Battle,mainStat: number = this.stats.strength, modifier = DamageModifier.Light, element: ElementalType = ElementalType.Physical ): TakeDamageResult{
         const targetedPlayer = battle.players[getRandomPercent() % battle.players.length];
-        return battle.dealDamageToCombatant(targetedPlayer, mainStat * damageModifier, damageType);
+        return battle.dealDamageToCombatant(this,targetedPlayer, mainStat * modifier, element);
     }
 
     isLucky(): boolean{

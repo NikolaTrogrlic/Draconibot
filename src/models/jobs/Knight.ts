@@ -14,14 +14,14 @@ export class Knight extends Job{
 
     constructor() {
 
-        const stats = new Stats({HP:15,strength:10,magic:0,luck:10,speed:10});
-        const classElement = ElementalType.Water;
+        const stats = new Stats({HP:15,strength:10,magic:0,luck:10,speed:5});
+        const classElement = ElementalType.Wind;
 
         const unlockablePassives = {
-            3:  new Passive(PassiveName.ShieldBash, "When you perform the 'Defend' action, you also perform a [0.5x STR] physical attack."),
+            3:  new Passive(PassiveName.BlockStance, "Gain a 35% chance to heal 10% of your maximum HP when defending."),
             5:  new Passive(PassiveName.SacredOath, "Gain a [LUCK] % chance to count as defending when performing the attack action."),
-            7:  new Passive(PassiveName.AutoEarthResist, "Gain resistance to earth at the start of battle for 3 turns."),
-            9:  new Passive(PassiveName.BlockStance, "Heal 10% of your maximum health before taking damage when defending.")
+            7:  new Passive(PassiveName.AutoResistEarth, "Gain resistance to earth at the start of battle for 3 turns."),
+            9:  new Passive(PassiveName.ShieldBash, "Follow up the 'Defend' action with a **WEAK strength based** physical attack on a targeted enemy."),
         };
 
         const unlockableSkills = {

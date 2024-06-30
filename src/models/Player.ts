@@ -32,7 +32,7 @@ export class Player extends Combatant {
     this.userID = id;
     this.jobs = Jobs.getJobsForLevel(1);
     this.changeMainJob(JobName.Knight);
-    this.changeSubJob(JobName.Cleric);
+    this.changeSubJob(JobName.Pyromancer);
     this.burst = 0;
     this.maxBurst = 100;
     this.lastLeaveCommandUse.setTime(this.lastLeaveCommandUse.getTime() - (1000 * 60 * 5));
@@ -69,6 +69,15 @@ export class Player extends Combatant {
     }
 
     return this.stats;
+  }
+
+  setMaxLevelMainJob(job: JobName){
+    //FOR TESTING ONLY
+    let mainJob = this.jobs.find(x => x.name == job);
+    if(mainJob){
+      mainJob.level = 10;
+      this.changeMainJob(mainJob.name);
+    }
   }
 
   changeMainJob(selectedClass: JobName): string {
@@ -216,6 +225,7 @@ export class Player extends Combatant {
         leveledUp = true;
       }
 
+
       if (leveledUp) {
         result +=
           ` -${this.mainJob.name.toUpperCase()} LEVEL ${initialLevel} > ${
@@ -225,5 +235,19 @@ export class Player extends Combatant {
     }
 
     return result;
+  }
+
+  refreshPassivesList(){
+    for(let job of this.jobs){
+      let passives = job.getUnlockedPassives();
+      for (let jobPassive of passives) {
+        let index = this.unlockedPassives.findIndex(
+          (x) => x.name == jobPassive.name
+        );
+        if (index == -1 && jobPassive) {
+          this.unlockedPassives.push(jobPassive);
+        }
+      }
+    }
   }
 }

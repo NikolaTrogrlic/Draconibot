@@ -1,14 +1,16 @@
 
 import { Player } from "../../Player";
-import { StatusEffect } from "../../StatusEffect";
 import { Battle } from "../../battle/Battle";
 import { CombatMessage } from "../../battle/CombatMessage";
+import { Scorch } from "../../effects/Scorch";
+import { AutoGuard } from "../../effects/WhenHitEffects/AutoGuard";
+import { DamageModifier } from "../../enums/DamageModifier";
 import { ElementalType } from "../../enums/ElementalType";
 import { JobName } from "../../enums/JobName";
+import { PassiveName } from "../../enums/PassiveName";
 import { SkillName } from "../../enums/SkillName";
-import { StatusEffectType } from "../../enums/StatusEffectType";
-import { Job } from "../../jobs/Job";
-import { Skill, TargetType } from "../Skill";
+import { TargetType } from "../../enums/TargetType";
+import { Skill } from "../Skill";
 import { DefendAction } from "./DefendAction";
 
 export class BurstAction extends Skill{
@@ -24,23 +26,87 @@ export class BurstAction extends Skill{
                battle.display.addMessage(new CombatMessage(`🌪️ **A powerful storm is summoned beneath ${user.nickname}'s enemies!** 🌪️\n`));
                for(let combatant of this.getTarget(user,battle, TargetType.AllEnemies)){
                   
-                  let result =  battle.dealDamageToCombatant(combatant,user.stats.strength * 1.8, ElementalType.Wind);
+                  let result =  battle.dealDamageToCombatant(user,combatant,user.stats.strength * DamageModifier.Massive, ElementalType.Wind);
                   battle.display.addMessage(result.combatMessage);
                }
 
                if(user.mainJob.level >= 10){
                   battle.display.addMessage(new CombatMessage(`${user.nickname} starts automatically guarding incoming moves for 3 rounds.`));
-                  let status = user.buffs.find(x => x.type == StatusEffectType.AutoGuard);
-                  if(status){
-                     status.duration += 3;
-                  }
-                  else{
-                     user.buffs.push(new StatusEffect(StatusEffectType.AutoGuard, 3));
-                  }
+                  user.giveEffect(new AutoGuard());
                   DefendAction.onDefendAction(user,battle);
                }
                break;
             }
+         case JobName.Pyromancer:
+            {
+               var message = new CombatMessage(`**Meteors rain across the battle field!**`);
+               message.keyFrames = [
+                  `⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛☄️⬛⬛⬛\n
+                   Meteors rain across the   battlefield!\n
+                   ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛`,
+                  
+                  `⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n
+                   Meteors rain across the ☄️ battlefield!\n
+                   ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛`,
+                  
+                  `⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n
+                   Meteors rain across the  battlefield!\n
+                   ⬛⬛⬛⬛⬛⬛⬛☄️⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛`,
+                  
+                  `⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n
+                   Meteors rain across the  battlefield!\n
+                   ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛`
+               ]
+               battle.display.addMessage(message);
+
+               let scorchTriggered: boolean = false;
+               for(let i = 0; i < 4;i++){
+                  for(let combatant of this.getTarget(user,battle, TargetType.RandomEnemy)){
+                  
+                     let result =  battle.dealDamageToCombatant(user,combatant,user.stats.magic * DamageModifier.Weak, ElementalType.Fire);
+                     battle.display.addMessage(result.combatMessage);
+
+                     if(user.mainJob.level >= 10){
+                        user.heal(result.damageTaken);
+                     }
+
+                     if(user.passives.find(x => x.name == PassiveName.HeatHaze)){
+                        result.damagedCharacter.giveEffect(new Scorch());
+                     }
+                     
+                     if(!scorchTriggered){
+                        scorchTriggered = Scorch.didEffectTrigger(result.damagedCharacter);
+                     }
+                  }
+               }
+
+
+               if(scorchTriggered){
+                  let messageDisplayed = false;
+
+                  for(let i = 0; i < 4;i++){
+                     for(let combatant of this.getTarget(user,battle, TargetType.RandomEnemy)){
+                     
+                        if(combatant.stats.HP > 0 && messageDisplayed == false){
+                           battle.display.clearScreenAndAddMessage(
+                              new CombatMessage(
+                                `🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥\n
+                                       Doublecast! Calamity Storm!\n
+                                 🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥`));
+                              messageDisplayed = true;
+                        }
+                        let result =  battle.dealDamageToCombatant(user,combatant,user.stats.magic * DamageModifier.Weak, ElementalType.Fire);
+                        battle.display.addMessage(result.combatMessage);
+   
+                        if(user.mainJob.level >= 10){
+                           user.heal(result.damageTaken);
+                        }
+                     }
+                  }
+               }
+            }
       }
+
+      user.burst = 0;
    }
 }

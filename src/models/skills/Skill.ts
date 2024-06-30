@@ -3,15 +3,7 @@ import { Combatant } from "../Combatant";
 import { Player } from "../Player";
 import { Battle } from "../battle/Battle";
 import { SkillName } from "../enums/SkillName";
-
-export enum TargetType{
-    SingleEnemy = 0,
-    AllEnemies = 1,
-    Self = 2,
-    WeakestAlly = 3,
-    Party = 4,
-    None = 5
-}
+import { TargetType } from "../enums/TargetType";
 
 export abstract class Skill{
 
@@ -76,6 +68,16 @@ export abstract class Skill{
                     let weaklings = [];
                     weaklings.push(battle.players[weakestPlayerIndex]);
                     return weaklings;
+                }
+            case TargetType.RandomEnemy:
+                {
+                    let monster = [];
+                    let livingMonsters = battle.monsters.filter(x => x.stats.HP > 0);
+                    if(livingMonsters.length > 0){
+                        const randomMonster = livingMonsters[Math.floor(Math.random() * livingMonsters.length)];
+                        monster.push(randomMonster);
+                    }
+                    return monster;
                 }
             case TargetType.None:
                 return [];
