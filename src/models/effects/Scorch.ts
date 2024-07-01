@@ -7,7 +7,7 @@ export class Scorch extends EffectBase{
     static didEffectTrigger(target: Combatant): boolean{
         for(let effect of target.effects){
             if(effect instanceof Scorch && effect.duration > 0){
-                let chance = 100 * effect.stacks;
+                let chance = 5 * effect.stacks;
                 if(getRandomPercent() < chance){
                     effect.duration = 0;
                     effect.stacks = 0;

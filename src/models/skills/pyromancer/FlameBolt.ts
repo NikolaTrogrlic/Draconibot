@@ -20,18 +20,19 @@ export class FlameBolt extends Skill{
    skillEffect(user: Player, battle: Battle){
 
       let scorchTriggered: boolean = false;
+      let targets = this.getTarget(user,battle);
 
-      for(let combatant of this.getTarget(user,battle)){
+      for(let combatant of targets){
          let result =  battle.dealDamageToCombatant(user,combatant,user.stats.magic * DamageModifier.Medium, ElementalType.Fire);
          battle.display.addMessage(result.combatMessage);
-
-         if(user.passives.find(x => x.name == PassiveName.HeatHaze)){
-            result.damagedCharacter.giveEffect(new Scorch());
-         }
 
          if(!scorchTriggered){
             scorchTriggered = Scorch.didEffectTrigger(result.damagedCharacter);
          }
+      }
+
+      if(user.passives.find(x => x.name == PassiveName.HeatHaze)){
+         targets.forEach(target => target.giveEffect(new Scorch()));
       }
 
       if(scorchTriggered){

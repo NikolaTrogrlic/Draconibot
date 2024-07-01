@@ -31,8 +31,11 @@ export class Player extends Combatant {
     this.menu = new MenuHandler(createInteraction);
     this.userID = id;
     this.jobs = Jobs.getJobsForLevel(1);
-    this.changeMainJob(JobName.Knight);
-    this.changeSubJob(JobName.Pyromancer);
+    this.changeMainJob(JobName.Pyromancer);
+
+    this.setMaxLevelMainJob(JobName.Pyromancer);
+
+    this.changeSubJob(JobName.Knight);
     this.burst = 0;
     this.maxBurst = 100;
     this.lastLeaveCommandUse.setTime(this.lastLeaveCommandUse.getTime() - (1000 * 60 * 5));

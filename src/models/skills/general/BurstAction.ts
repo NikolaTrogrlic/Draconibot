@@ -69,17 +69,16 @@ export class BurstAction extends Skill{
                      if(user.mainJob.level >= 10){
                         user.heal(result.damageTaken);
                      }
-
-                     if(user.passives.find(x => x.name == PassiveName.HeatHaze)){
-                        result.damagedCharacter.giveEffect(new Scorch());
-                     }
                      
                      if(!scorchTriggered){
                         scorchTriggered = Scorch.didEffectTrigger(result.damagedCharacter);
                      }
+
+                     if(user.passives.find(x => x.name == PassiveName.HeatHaze)){
+                        result.damagedCharacter.giveEffect(new Scorch());
+                     }
                   }
                }
-
 
                if(scorchTriggered){
                   let messageDisplayed = false;

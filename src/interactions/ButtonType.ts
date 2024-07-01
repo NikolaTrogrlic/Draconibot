@@ -11,5 +11,7 @@ export enum ButtonType{
    SetSubjob = "SetSubjob",
    SkillList = "SkillList",
    EquipMenu = "EquipMenu",
-   SetPassives = "SetPassives"
+   SetPassives = "SetPassives",
+   ShowBattleStatus = "ShowBattleStatus",
+   ShowTurnDisplay = "ShowTurnDisplay"
 }

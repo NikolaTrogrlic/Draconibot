@@ -18,24 +18,24 @@ export class SunStrike extends Skill{
     skillEffect(user: Player, battle: Battle){
  
        let scorchTriggered: boolean = false;
+       let targets = this.getTarget(user,battle);
  
-       for(let combatant of this.getTarget(user,battle)){
-        battle.display.addMessage(new CombatMessage(`Shoots a **blinding** beam of light at ${combatant.nickname}`));
+       for(let combatant of targets){
+        battle.display.addMessage(new CombatMessage(`Shoots a blinding beam of light at ${combatant.nickname}.`));
         combatant.giveEffect(new Scorch());
         combatant.giveEffect(new Blinded());
-
-         if(user.passives.find(x => x.name == PassiveName.HeatHaze)){
-            combatant.giveEffect(new Scorch());
-         }
 
          if(!scorchTriggered){
             scorchTriggered = Scorch.didEffectTrigger(combatant);
          }
        }
+
+       if(user.passives.find(x => x.name == PassiveName.HeatHaze)){
+         targets.forEach(target => target.giveEffect(new Scorch()));
+       }
  
        if(scorchTriggered){
-            battle.display.addMessage(new CombatMessage("**[SCORCH] Doublecast! Scorch Strike !**"));
-            battle.display.addMessage(new CombatMessage("Extra stack of scorch inflicted and blind duration increased."));
+            battle.display.addMessage(new CombatMessage("[SCORCH] Doublecast! Extra stack of scorch inflicted and blind duration increased."));
             for(let combatant of this.getTarget(user,battle)){
                 combatant.giveEffect(new Scorch());
                 combatant.giveEffect(new Blinded());

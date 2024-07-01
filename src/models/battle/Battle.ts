@@ -62,7 +62,7 @@ export class Battle {
             combatant.effects = [];
             
             if(combatant instanceof Player){
-                combatant.burst = 100;
+                combatant.burst = 0;
                 for(var passive of combatant.passives){
 
                     let battleStartEffect: EffectBase | undefined;
@@ -267,103 +267,10 @@ export class Battle {
         }
     }
 
-    getTargetingRow(): ActionRowBuilder<ButtonBuilder>{
-        const targetRow = new ActionRowBuilder<ButtonBuilder>();
-        let buttons = [];
-
-        for (let i = 0; i < this.monsters.length; i++) {
-            let button = new ButtonBuilder()
-            .setCustomId(`${i}`)
-            .setLabel(`${this.monsters[i].nickname}`);
-
-            if(i == this.currentTarget){
-                button.setStyle(ButtonStyle.Danger);
-            }
-            else{
-                button.setStyle(ButtonStyle.Secondary);  
-            }
-
-            buttons.push(button);
-        }
-        targetRow.addComponents(...buttons);
-
-        return targetRow;
-    }
-
     async playerTurn(player: Player) {
         this.currentTarget = 0;
         player.tickStatus(1);
-        this.display.title = `${player.nickname}'s turn`;
-        let bpMessage = "BP: ";
-        for(let i = 0;i  <  player.maxBP; i++){
-            if(i < player.bp){
-                bpMessage += " 🟠";
-            }
-            else{
-                bpMessage += " ⚫";
-            }
-        }
-        this.display.addMessage(new CombatMessage(bpMessage),new CombatMessage(`Burst: **${player.burst}%**`));
-        const embed = this.display.getTurnDisplay(this.monsters,this.players);
-        const targetRow = this.getTargetingRow();
-
-        const generalSkillsRow = new ActionRowBuilder<ButtonBuilder>();
-        for (let skill of player.generalSkills) {
-
-            let button = new ButtonBuilder()
-            .setCustomId(skill.name)
-            .setLabel(skill.name)
-
-            if(skill instanceof BurstAction && player.burst >= player.maxBurst){
-                button.setStyle(ButtonStyle.Danger);
-            }
-            else{
-                button.setStyle(ButtonStyle.Primary);
-            }
-
-            generalSkillsRow.addComponents(button);
-        }
-
-        const classSkillsRow = new ActionRowBuilder<ButtonBuilder>();
-        for (let skill of player.mainJob.skills) {
-
-            let button = new ButtonBuilder()
-            .setCustomId(skill.name)
-            .setLabel(skill.name)
-            .setStyle(ButtonStyle.Secondary);
-
-            if(skill.bpCost > player.bp){
-                button.setDisabled(true);
-            }
-
-            classSkillsRow.addComponents(button);
-        }
-
-        const subclassSkillsRow = new ActionRowBuilder<ButtonBuilder>();
-        for (let skill of player.subJob.skills) {
-
-            let button = new ButtonBuilder()
-                .setCustomId(skill.name)
-                .setLabel(skill.name)
-                .setStyle(ButtonStyle.Secondary)
-
-            if(skill.bpCost > player.bp){
-                button.setDisabled(true);
-            }
-
-            subclassSkillsRow.addComponents(button);
-        }
-
-        let buttonRows: ActionRowBuilder<ButtonBuilder>[] = [targetRow, generalSkillsRow];
-        if(classSkillsRow.components.length > 0){
-            buttonRows.push(classSkillsRow);
-        }
-
-        if(subclassSkillsRow.components.length > 0){
-            buttonRows.push(subclassSkillsRow);
-        }
-
-        await this.display.UI.updateDisplay([embed], buttonRows);
+        await this.display.showPlayerTurn(player, this.players, this.monsters, this.currentTarget);
     }
 
     async battleEnd() {

@@ -25,6 +25,8 @@ import { EquipMenu } from "./buttons/equipButtons/EquipMenu";
 import { PassivesSelect } from "./menus/PassivesSelect";
 import { SetPassives } from "./buttons/equipButtons/SetPassives";
 import { LeaveCommand } from "./commands/LeaveCommand";
+import { ShowBattleStatus } from "./buttons/ShowBattleStatus";
+import { ShowTurnDisplay } from "./buttons/ShowTurnDisplay";
 
 export const menus: { [key: string]: SelectMenuBase} = {
    [SelectMenuType.SetMainJobMenu] : new MainJobSelect(),
@@ -52,7 +54,9 @@ export const buttons: {[key: string]: ButtonBase} = {
    [ButtonType.SetSubjob]: new SetSubjob(),
    [ButtonType.SkillList]: new SkillList(),
    [ButtonType.EquipMenu]: new EquipMenu(),
-   [ButtonType.SetPassives]: new SetPassives()
+   [ButtonType.SetPassives]: new SetPassives(),
+   [ButtonType.ShowBattleStatus]: new ShowBattleStatus(),
+   [ButtonType.ShowTurnDisplay]: new ShowTurnDisplay()
 };
 
 export const targetButton = new TargetButton();

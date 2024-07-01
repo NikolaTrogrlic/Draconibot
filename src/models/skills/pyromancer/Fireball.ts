@@ -29,19 +29,20 @@ export class Fireball extends Skill{
          `💥⚫⚫⚫💥`,
          '⚫⚫⚫⚫⚫'
         ]
-        battle.display.addMessage(message);
+       battle.display.addMessage(message);
+       const targets = this.getTarget(user,battle);
 
-       for(let combatant of this.getTarget(user,battle)){
+       for(let combatant of targets){
           let result =  battle.dealDamageToCombatant(user,combatant,user.stats.magic * DamageModifier.Heavy, ElementalType.Fire);
           battle.display.addMessage(result.combatMessage);
 
-          if(user.passives.find(x => x.name == PassiveName.HeatHaze)){
-            result.damagedCharacter.giveEffect(new Scorch());
-          }
-          
           if(!scorchTriggered){
             scorchTriggered = Scorch.didEffectTrigger(result.damagedCharacter);
           }
+       }
+
+       if(user.passives.find(x => x.name == PassiveName.HeatHaze)){
+        targets.forEach(target => target.giveEffect(new Scorch()));
        }
 
        if(scorchTriggered){
