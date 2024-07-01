@@ -16,7 +16,7 @@ export class FireTrapEffect extends CounterAttackEffect{
         return data;
     }
 
-    constructor(duration: number = 3) {
-        super("Fire Trap", duration, 3, 5, 2);
+    constructor(duration: number = 2) {
+        super("Fire Trap", duration, 2, 5, 2);
     }
 }

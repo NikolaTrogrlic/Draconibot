@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "407f2576e593eb8e",
+        "id": "dd83b408720500e3",
         "type": "tabs",
         "children": [
           {
-            "id": "a3f7a81b167ca4bd",
+            "id": "d52392ef8649738e",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Classes/Gunslinger.md",
+                "file": "Classes/Pyromancer.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Classes/Gunslinger.md",
+                "file": "Classes/Pyromancer.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Classes/Gunslinger.md",
+                "file": "Classes/Pyromancer.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Classes/Gunslinger.md"
+                "file": "Classes/Pyromancer.md"
               }
             }
           }
@@ -147,15 +147,18 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "a3f7a81b167ca4bd",
+  "active": "d52392ef8649738e",
   "lastOpenFiles": [
-    "Terms/Status Effects/Tension.md",
+    "Classes/Apothecary.md",
+    "Terms/Status Effects/Bleed.md",
     "Classes/Gunslinger.md",
-    "Terms/Status Effects/Ricocheting Shots.md",
     "Classes/Knight.md",
-    "Terms/Status Effects/Poison.md",
+    "Terms/Status Effects/Elemental Damage Up.md",
     "Terms/Status Effects/Defense Up.md",
     "Classes/Pyromancer.md",
+    "Terms/Status Effects/Poison.md",
+    "Terms/Status Effects/Tension.md",
+    "Terms/Status Effects/Ricocheting Shots.md",
     "Terms/Energy Bullet.md",
     "Terms/Status Effects/Blind.md",
     "Terms/Status Effects/Scorch.md",

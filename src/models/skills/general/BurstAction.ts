@@ -60,10 +60,10 @@ export class BurstAction extends Skill{
                battle.display.addMessage(message);
 
                let scorchTriggered: boolean = false;
-               for(let i = 0; i < 4;i++){
+               for(let i = 0; i < 3;i++){
                   for(let combatant of this.getTarget(user,battle, TargetType.RandomEnemy)){
                   
-                     let result =  battle.dealDamageToCombatant(user,combatant,user.stats.magic * DamageModifier.Weak, ElementalType.Fire);
+                     let result =  battle.dealDamageToCombatant(user,combatant,user.stats.magic * DamageModifier.Light, ElementalType.Fire);
                      battle.display.addMessage(result.combatMessage);
 
                      if(user.mainJob.level >= 10){
@@ -73,17 +73,13 @@ export class BurstAction extends Skill{
                      if(!scorchTriggered){
                         scorchTriggered = Scorch.didEffectTrigger(result.damagedCharacter);
                      }
-
-                     if(user.passives.find(x => x.name == PassiveName.HeatHaze)){
-                        result.damagedCharacter.giveEffect(new Scorch());
-                     }
                   }
                }
 
                if(scorchTriggered){
                   let messageDisplayed = false;
 
-                  for(let i = 0; i < 4;i++){
+                  for(let i = 0; i < 3;i++){
                      for(let combatant of this.getTarget(user,battle, TargetType.RandomEnemy)){
                      
                         if(combatant.stats.HP > 0 && messageDisplayed == false){
@@ -94,7 +90,7 @@ export class BurstAction extends Skill{
                                  🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥`));
                               messageDisplayed = true;
                         }
-                        let result =  battle.dealDamageToCombatant(user,combatant,user.stats.magic * DamageModifier.Weak, ElementalType.Fire);
+                        let result =  battle.dealDamageToCombatant(user,combatant,user.stats.magic * DamageModifier.Light, ElementalType.Fire);
                         battle.display.addMessage(result.combatMessage);
    
                         if(user.mainJob.level >= 10){

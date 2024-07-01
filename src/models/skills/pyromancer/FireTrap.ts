@@ -13,12 +13,14 @@ export class FireTrap extends Skill{
     name: SkillName = SkillName.FireTrap;
     target: TargetType = TargetType.Self;
     bpCost: number = 1;
-    description: string = "1 BP - Gain 2 stacks of Fire Trap. For each stack, **Counter** physical attacks with a WEAK fire damage attack. Maximum 5 stacks. Lasts 2 turns."
+    description: string = "1 BP - Gain 2 stacks of Fire Trap. For each stack, **Counter** physical attacks with a WEAK fire damage attack. Maximum 5 stacks. Lasts 2 turns. Free Action."
     
     skillEffect(user: Player, battle: Battle){
  
        let scorchTriggered: boolean = false;
        const targets = this.getTarget(user,battle);
+
+       user.actions++;
 
        for(let combatant of targets){
         battle.display.addMessage(new CombatMessage(`Places down magical traps. [+2 Fire Trap ♨️]`));
