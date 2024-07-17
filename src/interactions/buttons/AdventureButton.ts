@@ -1,6 +1,6 @@
 import { ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, TextChannel } from "discord.js";
 import { Globals } from "../../globals";
-import { ButtonType } from "../ButtonType";
+import { ButtonName } from "../ButtonName";
 import { ButtonBase } from "../base/ButtonBase";
 import { Battle } from "../../models/battle/Battle";
 import { getLocationForLevel, createMonsters, getRandomEncounterMonsterCount } from "../../models/monsters/Monsters";
@@ -44,7 +44,7 @@ export class AdventureButton extends ButtonBase{
 
    static button(): ButtonBuilder {
       return new ButtonBuilder()
-      .setCustomId(ButtonType.Adventure)
+      .setCustomId(ButtonName.Adventure)
       .setLabel('Adventure')
       .setStyle(ButtonStyle.Secondary);
     }

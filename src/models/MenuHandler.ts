@@ -49,7 +49,7 @@ export class MenuHandler {
   ) {
       if (this.message) {
          try{ //Edit existing message
-            await this.message.edit({ embeds: embed, components: components });
+            this.message = await this.message.edit({ embeds: embed, components: components});
             if(!(interaction instanceof CommandInteraction) && interaction?.replied == false){
                interaction?.update({fetchReply: false});
             }

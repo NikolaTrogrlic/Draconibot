@@ -1,6 +1,5 @@
 import { Player } from "../../Player";
 import { Battle } from "../../battle/Battle";
-import { CombatMessage } from "../../battle/CombatMessage";
 import { Blinded } from "../../effects/OnAttackingEffects/Blinded";
 import { Scorch } from "../../effects/Scorch";
 import { PassiveName } from "../../enums/PassiveName";
@@ -21,7 +20,7 @@ export class SunStrike extends Skill{
        let targets = this.getTarget(user,battle);
  
        for(let combatant of targets){
-        battle.display.addMessage(new CombatMessage(`Shoots a blinding beam of light at ${combatant.nickname}.`));
+        battle.display.addMessage(`Shoots a blinding beam of light at ${combatant.nickname}.`);
         combatant.giveEffect(new Scorch());
         combatant.giveEffect(new Blinded());
 
@@ -35,7 +34,7 @@ export class SunStrike extends Skill{
        }
  
        if(scorchTriggered){
-            battle.display.addMessage(new CombatMessage("[SCORCH] Doublecast! Extra stack of scorch inflicted and blind duration increased."));
+            battle.display.addMessage("[SCORCH] Doublecast! Extra stack of scorch inflicted and blind duration increased.");
             for(let combatant of this.getTarget(user,battle)){
                 combatant.giveEffect(new Scorch());
                 combatant.giveEffect(new Blinded());

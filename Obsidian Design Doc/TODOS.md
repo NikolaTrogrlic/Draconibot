@@ -1,0 +1,31 @@
+
+---
+- [ ] Make sure status effects can have infinite duration
+- [ ] Make BP not increase on turns after spending BP
+- [ ] Implement Dungeons
+- [ ] Implement Achievements
+- [ ] Crystal Gem System
+- [ ] Potion System
+- [ ] Update Jobs
+	- [ ] Remove Cleric 
+	- [ ] Knight
+	- [ ] Pyromancer
+- [ ] Save System
+- [ ] New enemies and bosses
+- [ ] New Jobs
+	- [ ] Gunslinger
+	- [ ] Apothecary
+	- [ ] Musician
+- [ ] New dungeons
+	- [ ] Dungeon with a puzzle
+	- [ ] Dungeon with a secret boss
+- [ ] New Jobs
+	- [ ] Spellblade
+	- [ ] Chef
+	- [ ] Assassin
+- [ ] Level 10-20 Content
+	- [ ] Enemies
+	- [ ] Dungeons
+	- [ ] Gems
+- [ ] Update TODO and Github Readme
+- [ ] Level 20-50 content...

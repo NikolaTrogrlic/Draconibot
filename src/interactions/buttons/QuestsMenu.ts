@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder } from "discord.js";
 import { Globals } from "../../globals";
-import { ButtonType } from "../ButtonType";
+import { ButtonName } from "../ButtonName";
 import { ButtonBase } from "../base/ButtonBase";
 import { AdventureButton } from "./AdventureButton";
 import { ReturnToMenu } from "./ReturnToMenu";
@@ -33,7 +33,7 @@ export class QuestsMenu extends ButtonBase{
 
    static button(): ButtonBuilder {
       return new ButtonBuilder()
-      .setCustomId(ButtonType.QuestsMenu)
+      .setCustomId(ButtonName.QuestsMenu)
       .setLabel('Quests')
       .setStyle(ButtonStyle.Secondary);
     }

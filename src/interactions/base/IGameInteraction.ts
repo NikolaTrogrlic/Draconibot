@@ -7,12 +7,7 @@ export interface IGameInteraction{
    canOnlyPerformOutsideBattle: boolean;
    canOnlyPerformOnOwnTurn: boolean;
 
-}
-
-export function isGameInteraction(object: any): object is IGameInteraction {
-   return 'needsPlayerExistance' in object && 
-   'canOnlyPerformOutsideBattle' in object && 
-   'canOnlyPerformOnOwnTurn' in object;
+   execute(interaction: any, globals: Globals, extraInfo: string): Promise<any>
 }
 
 export async function canPerformInteraction(

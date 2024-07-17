@@ -1,4 +1,4 @@
-export enum ButtonType{
+export enum ButtonName{
    JoinParty = "joinParty",
    DeclineParty = "declineParty",
    BattleAgain = "battleAgain",

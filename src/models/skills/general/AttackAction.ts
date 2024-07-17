@@ -2,7 +2,6 @@
 import { getRandomPercent } from "../../../random";
 import { Player } from "../../Player";
 import { Battle } from "../../battle/Battle";
-import { CombatMessage } from "../../battle/CombatMessage";
 import { DamageModifier } from "../../enums/DamageModifier";
 import { ElementalType } from "../../enums/ElementalType";
 import { PassiveName } from "../../enums/PassiveName";
@@ -31,7 +30,7 @@ export class AttackAction extends Skill{
       let sacredOath = user.passives.find(x => x.name == PassiveName.SacredOath);
       if(sacredOath && getRandomPercent() <= user.stats.luck){
          user.isDefending = true;
-         battle.display.addMessage(new CombatMessage("[Sacred Oath] Defends while attacking."));
+         battle.display.addMessage("[Sacred Oath] Defends while attacking.");
          DefendAction.onDefendAction(user,battle);
       }
    }

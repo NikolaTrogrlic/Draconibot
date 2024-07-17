@@ -23,7 +23,7 @@ export class BoulderBlade extends Skill{
          let target = battle.monsters.find(x => x.stats.HP > 0);
          if(target){
             let result2 = battle.dealDamageToCombatant(user,target,user.stats.strength * DamageModifier.Medium, ElementalType.Earth);
-            result2.combatMessage.message = `**[Extra Hit !]**` + result2.combatMessage.message;
+            result2.combatMessage = `**[Extra Hit !]**` + result2.combatMessage;
             battle.display.addMessage(result2.combatMessage);
             wasDefeated = result2.wasDefeated;
          }

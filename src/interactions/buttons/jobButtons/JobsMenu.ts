@@ -2,7 +2,7 @@ import { ButtonInteraction, StringSelectMenuInteraction, EmbedBuilder, ActionRow
 import { Globals } from "../../../globals";
 import { Player } from "../../../models/Player";
 import { Jobs } from "../../../models/jobs/Jobs";
-import { ButtonType } from "../../ButtonType";
+import { ButtonName } from "../../ButtonName";
 import { ButtonBase } from "../../base/ButtonBase";
 import { ReturnToMenu } from "../ReturnToMenu";
 import { SetJob } from "./SetJob";
@@ -46,7 +46,7 @@ export class JobsMenu extends ButtonBase{
 
    static button(): ButtonBuilder {
       return new ButtonBuilder()
-      .setCustomId(ButtonType.JobsMenu)
+      .setCustomId(ButtonName.JobsMenu)
       .setLabel('Jobs')
       .setStyle(ButtonStyle.Secondary);
     }

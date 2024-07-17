@@ -1,6 +1,6 @@
 import { ButtonInteraction, StringSelectMenuInteraction, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ActionRow } from "discord.js";
 import { Globals } from "../../../globals";
-import { ButtonType } from "../../ButtonType";
+import { ButtonName } from "../../ButtonName";
 import { ButtonBase } from "../../base/ButtonBase";
 
 
@@ -58,7 +58,7 @@ export class SkillList extends ButtonBase{
 
    static button(): ButtonBuilder {
       return new ButtonBuilder()
-      .setCustomId(ButtonType.SkillList)
+      .setCustomId(ButtonName.SkillList)
       .setLabel('Skill List')
       .setStyle(ButtonStyle.Secondary);
     }

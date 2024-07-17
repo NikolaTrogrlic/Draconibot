@@ -1,7 +1,6 @@
 
 import { Player } from "../../Player";
 import { Battle } from "../../battle/Battle";
-import { CombatMessage } from "../../battle/CombatMessage";
 import { DamageModifier } from "../../enums/DamageModifier";
 import { ElementalType } from "../../enums/ElementalType";
 import { SkillName } from "../../enums/SkillName";
@@ -16,17 +15,8 @@ export class RisingSlash extends Skill{
    description: string = "1 BP - Deal MEDIUM **strength based** wind damage."
    
    skillEffect(user: Player, battle: Battle){
-      
-      let message = new CombatMessage(`***Performs a soaring slash.***`);
-      message.keyFrames = [
-         `⏫\n⏫\n⏫ ***Performs a soaring slash.***`,
-         `⏫\n⏫ ***Performs a soaring slash.***\n⏫`,
-         `⏫ ***Performs a soaring slash.***\n⏫\n⏫`,
-         `⏫ ***Performs a soaring slash.***\n⏫`,
-         `⏫ ***Performs a soaring slash.***`,
-      ]
 
-      battle.display.addMessage(message);
+      battle.display.addMessage(`***Performs a soaring slash. ⏫***`);
 
       for(let combatant of this.getTarget(user,battle)){
 

@@ -6,7 +6,7 @@ import { MainJobSelect } from "./menus/MainJobSelect";
 import { SubJobSelect } from "./menus/SubJobSelect";
 import { PartyCommand } from "./commands/PartyCommand";
 import { ButtonBase } from "./base/ButtonBase";
-import { ButtonType } from "./ButtonType";
+import { ButtonName } from "./ButtonName";
 import { BattleAgain } from "./buttons/BattleAgain";
 import { DeclineBattleAgain } from "./buttons/DeclineBattleAgain";
 import { DeclineParty } from "./buttons/DeclineParty";
@@ -42,21 +42,21 @@ export const commands: { [key: string]: CommandBase} = {
 
 //Excludes skill and targeting buttons
 export const buttons: {[key: string]: ButtonBase} = {
-	[ButtonType.BattleAgain]: new BattleAgain(),
-   [ButtonType.DeclineBattleAgain]: new DeclineBattleAgain(),
-   [ButtonType.DeclineParty]: new DeclineParty(),
-   [ButtonType.JoinParty]: new JoinParty(),
-   [ButtonType.QuestsMenu]: new QuestsMenu(),
-   [ButtonType.Adventure]: new AdventureButton(),
-   [ButtonType.ReturnToMenu]: new ReturnToMenu(),
-   [ButtonType.JobsMenu]: new JobsMenu(),
-   [ButtonType.SetJob]: new SetJob(),
-   [ButtonType.SetSubjob]: new SetSubjob(),
-   [ButtonType.SkillList]: new SkillList(),
-   [ButtonType.EquipMenu]: new EquipMenu(),
-   [ButtonType.SetPassives]: new SetPassives(),
-   [ButtonType.ShowBattleStatus]: new ShowBattleStatus(),
-   [ButtonType.ShowTurnDisplay]: new ShowTurnDisplay()
+	[ButtonName.BattleAgain]: new BattleAgain(),
+   [ButtonName.DeclineBattleAgain]: new DeclineBattleAgain(),
+   [ButtonName.DeclineParty]: new DeclineParty(),
+   [ButtonName.JoinParty]: new JoinParty(),
+   [ButtonName.QuestsMenu]: new QuestsMenu(),
+   [ButtonName.Adventure]: new AdventureButton(),
+   [ButtonName.ReturnToMenu]: new ReturnToMenu(),
+   [ButtonName.JobsMenu]: new JobsMenu(),
+   [ButtonName.SetJob]: new SetJob(),
+   [ButtonName.SetSubjob]: new SetSubjob(),
+   [ButtonName.SkillList]: new SkillList(),
+   [ButtonName.EquipMenu]: new EquipMenu(),
+   [ButtonName.SetPassives]: new SetPassives(),
+   [ButtonName.ShowBattleStatus]: new ShowBattleStatus(),
+   [ButtonName.ShowTurnDisplay]: new ShowTurnDisplay()
 };
 
 export const targetButton = new TargetButton();

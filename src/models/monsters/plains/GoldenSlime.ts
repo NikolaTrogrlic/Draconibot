@@ -1,7 +1,6 @@
 
 import { Stats } from "../../Stats";
 import { Battle } from "../../battle/Battle";
-import { CombatMessage } from "../../battle/CombatMessage";
 import { ElementalType } from "../../enums/ElementalType";
 import { Monster } from "../Monster";
 
@@ -17,14 +16,13 @@ export class GoldenSlime extends Monster{
    performCombatTurn(battle: Battle){
 
       if(this.isLucky()){
-         battle.display.addMessage(new CombatMessage("Secretes a funky liquid."));
          for(let monster of battle.monsters){
             monster.heal(5);
          }
-         battle.display.addMessage(new CombatMessage("All enemies are healed 5 HP."));
+         battle.display.addMessage("Secretes a funky liquid.\nAll enemies are healed 5 HP.");
       }
       else{
-         battle.display.addMessage(new CombatMessage("Shines brightly."));
+         battle.display.addMessage("Shines brightly.");
       }
    }
 }

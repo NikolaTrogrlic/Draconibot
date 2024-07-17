@@ -1,19 +1,15 @@
 import { config } from "./config";
 import { deployCommands } from "./deployment/deploy-commands";
-import { BaseInteraction, Client, GatewayIntentBits } from "discord.js";
-import { Globals } from "./globals";
-import {
-  IGameInteraction,
-  canPerformInteraction,
-  isGameInteraction,
-} from "./interactions/base/IGameInteraction";
+import { Client, GatewayIntentBits } from "discord.js";
+import { Globals } from "./globals"; 
+import { IGameInteraction, canPerformInteraction} from "./interactions/base/IGameInteraction";
 import { buttons, commands, menus, skillButton, targetButton } from "./interactions/InteractionList";
-import { TargetButton } from "./interactions/buttons/TargetButton";
-import { ButtonActionInfo } from "./interactions/base/ButtonActionInfo";
+import { ButtonActionInfo, ButtonType } from "./interactions/base/ButtonActionInfo";
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
 });
+
 const globals: Globals = new Globals();
 
 client.once("ready", () => {
@@ -27,49 +23,56 @@ client.on("guildCreate", async () => {
 
 client.on("interactionCreate", async (interaction) => {
   try {
-    if (interaction.isCommand()) {
-      const command = commands[interaction.commandName];
-      if (command) {
-        if (isGameInteraction(command)) {
-          if (await canPerformInteraction(command, interaction, globals)) {
-            command.execute(interaction, globals);
-          }
-			 return;
-        } 
+
+    let gameInteraction: IGameInteraction | undefined = undefined;
+    let extraData = "";
+
+    if(interaction.isCommand())
+    {
+      gameInteraction = commands[interaction.commandName];
+    }
+    else if(interaction.isButton())
+    {
+      let buttonInfo = ButtonActionInfo.getButtonInfo(interaction.customId);
+      if(buttonInfo){
+        extraData = buttonInfo.extraData;
+        switch(buttonInfo.type){
+          case ButtonType.GeneralButton:
+            {
+              gameInteraction = buttons[buttonInfo.key];
+              break;
+            }
+          case ButtonType.TargetingButton:
+            {
+              gameInteraction = targetButton;
+              break;
+            }
+          case ButtonType.SkillButton:
+            {
+              gameInteraction = skillButton;
+              break;
+            }
+        }
       }
     }
-	 else if(interaction.isButton()){
-      const actionInfo = ButtonActionInfo.getButtonActionName(
-        interaction.customId
-      );
-
-      if (actionInfo.targetNumber != -1) {
-			if (await canPerformInteraction(targetButton, interaction, globals)) {
-            targetButton.execute(interaction, globals, actionInfo.targetNumber);
-         }
-			return;
-      }
-		else if(actionInfo.isSkill){
-			if (await canPerformInteraction(skillButton, interaction, globals)) {
-            skillButton.execute(interaction, globals, actionInfo.key);
-         }
-			return;
-		}
-		else{
-			const button = buttons[actionInfo.key];
-			if (await canPerformInteraction(button, interaction, globals)) {
-            button.execute(interaction, globals, actionInfo.previousInteractionID);
-         }
-			return;
-      }
-    } else if (interaction.isStringSelectMenu()) {
-      menus[interaction.customId].onSelectionPerformed(interaction, globals);
-    } else {
+    else if(interaction.isStringSelectMenu())
+    {
+      gameInteraction = menus[interaction.customId];
+    }
+    else{
       await interaction.channel?.send({ content: "Error." });
       return;
     }
-  } catch (e) {
-    await interaction.channel?.send({ content: "Error." });
+
+    if(gameInteraction && await canPerformInteraction(gameInteraction, interaction, globals))
+    {
+      gameInteraction.execute(interaction,globals,extraData);
+    }
+
+  }
+  catch (e)
+  {
+    await interaction.channel?.send({ content: "Unspecified error occured." });
     console.log(e);
   }
 });

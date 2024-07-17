@@ -1,6 +1,5 @@
 import { Player } from "../../Player";
 import { Battle } from "../../battle/Battle";
-import { CombatMessage } from "../../battle/CombatMessage";
 import { DefenseUp } from "../../effects/WhenHitEffects/DefenseUp";
 import { SkillName } from "../../enums/SkillName";
 import { TargetType } from "../../enums/TargetType";
@@ -14,7 +13,7 @@ export class ArmorUp extends Skill{
    description: string = "2 BP - Grant Defense Up to all allies for **3 turns**.";
    
    skillEffect(user: Player, battle: Battle){
-      battle.display.addMessage(new CombatMessage(`**Raises the party's ⚔️ defense !**`));
+      battle.display.addMessage(`**Raises the party's ⚔️ defense !**`);
       
       for(let ally of this.getTarget(user,battle)){
          ally.giveEffect(new DefenseUp());

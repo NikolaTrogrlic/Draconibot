@@ -1,6 +1,6 @@
 import { ButtonBuilder, ButtonInteraction, ButtonStyle, CacheType, userMention } from "discord.js";
 import { Globals } from "../../globals";
-import { ButtonType } from "../ButtonType";
+import { ButtonName } from "../ButtonName";
 import { ButtonBase } from "../base/ButtonBase";
 
 export class DeclineParty extends ButtonBase{
@@ -57,7 +57,7 @@ export class DeclineParty extends ButtonBase{
 
   static button(previousInteractionID: string): ButtonBuilder {
     return new ButtonBuilder()
-    .setCustomId(ButtonType.DeclineParty + previousInteractionID)
+    .setCustomId(ButtonName.DeclineParty + previousInteractionID)
     .setLabel('Decline')
     .setStyle(ButtonStyle.Danger);
   }

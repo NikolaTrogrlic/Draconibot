@@ -1,6 +1,5 @@
 import { Player } from "../../Player";
 import { Battle } from "../../battle/Battle";
-import { CombatMessage } from "../../battle/CombatMessage";
 import { Scorch } from "../../effects/Scorch";
 import { DamageModifier } from "../../enums/DamageModifier";
 import { ElementalType } from "../../enums/ElementalType";
@@ -18,18 +17,8 @@ export class Fireball extends Skill{
     
     skillEffect(user: Player, battle: Battle){
 
-        let scorchTriggered: boolean = false;
-        let message = new CombatMessage(`***Shoots a ball of fire.***`);
-        message.keyFrames = [
-         `🔥⚫⚫⚫⚫`,
-         `⚫🔥⚫⚫⚫`,
-         `⚫⚫🔥⚫⚫`,
-         `⚫⚫💥⚫⚫`,
-         `⚫💥⚫💥⚫`,
-         `💥⚫⚫⚫💥`,
-         '⚫⚫⚫⚫⚫'
-        ]
-       battle.display.addMessage(message);
+      let scorchTriggered: boolean = false;
+       battle.display.addMessage(`***Shoots a ball of fire. 🔥***`);
        const targets = this.getTarget(user,battle);
 
        for(let combatant of targets){
@@ -49,7 +38,7 @@ export class Fireball extends Skill{
         let messageDisplayed = false;
         for(let combatant of this.getTarget(user,battle)){
           if(combatant.stats.HP > 0 && messageDisplayed == false){
-            battle.display.addMessage(new CombatMessage("\n**[SCORCH] Doublecast! Nova flame!**"));
+            battle.display.addMessage("\n**[SCORCH] Doublecast! Nova flame!**");
             messageDisplayed = true;
           }
             let result =  battle.dealDamageToCombatant(user,combatant,user.stats.magic * DamageModifier.Heavy, ElementalType.Fire);

@@ -1,0 +1,1 @@
+Removes  resistance to the specified element and makes the foe take 10% more damage to that element. Lasts up to 10 turns.

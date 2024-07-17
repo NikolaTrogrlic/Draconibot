@@ -1,7 +1,7 @@
 import { ButtonBuilder, ButtonInteraction, ButtonStyle, CacheType } from "discord.js";
 import { Globals } from "../../globals";
 import { ButtonBase } from "../base/ButtonBase";
-import { ButtonType } from "../ButtonType";
+import { ButtonName } from "../ButtonName";
 
 export class ShowBattleStatus extends ButtonBase{
 
@@ -21,7 +21,7 @@ export class ShowBattleStatus extends ButtonBase{
 
    static button(): ButtonBuilder {
     return new ButtonBuilder()
-      .setCustomId(ButtonType.ShowBattleStatus)
+      .setCustomId(ButtonName.ShowBattleStatus)
       .setLabel("Battle Status")
       .setStyle(ButtonStyle.Secondary);
     }

@@ -8,7 +8,7 @@ import {
    StringSelectMenuOptionBuilder,
  } from "discord.js";
 import { Globals } from "../../../globals";
-import { ButtonType } from "../../ButtonType";
+import { ButtonName } from "../../ButtonName";
 import { SelectMenuType } from "../../SelectMenuType";
 import { ButtonBase } from "../../base/ButtonBase";
  
@@ -49,7 +49,7 @@ import { ButtonBase } from "../../base/ButtonBase";
  
    static button(): ButtonBuilder {
      return new ButtonBuilder()
-       .setCustomId(ButtonType.SetSubjob)
+       .setCustomId(ButtonName.SetSubjob)
        .setLabel("Set Sub")
        .setStyle(ButtonStyle.Secondary);
    }

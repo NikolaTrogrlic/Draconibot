@@ -1,6 +1,5 @@
 import { Player } from "../../Player";
 import { Battle } from "../../battle/Battle";
-import { CombatMessage } from "../../battle/CombatMessage";
 import { SkillName } from "../../enums/SkillName";
 import { TargetType } from "../../enums/TargetType";
 import { Skill } from "../Skill";
@@ -16,14 +15,6 @@ export class FleeAction extends Skill{
       battle.display.addMessage();
       user.actions = 0;
       user.isFleeing = true;
-      let message = new CombatMessage(`${user.nickname} flees battle.`)
-      message.keyFrames = [
-         "🏃 ",
-         "🏃 💨",
-         "🏃 💨 💨 ",
-         "🏃 💨 💨 💨 ",
-         `${user.nickname} **flees** battle.`
-      ];
-      battle.display.addMessage(message);
+      battle.display.addMessage(`🏃 ${user.nickname} flees battle.`);
    }
 }

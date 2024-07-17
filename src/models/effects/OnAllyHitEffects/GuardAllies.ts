@@ -6,7 +6,7 @@ export class GuardAllies extends TriggerWhenAllyHitEffect{
     
     trigger(owner: Combatant ,data: TakeDamageResult): TakeDamageResult {
         if(owner.stats.HP > 0){
-            data.combatMessage.message += `**${owner.nickname} blocks the hit for ${data.damagedCharacter.nickname}**\n`;
+            data.combatMessage += `**${owner.nickname} blocks the hit for ${data.damagedCharacter.nickname}**\n`;
             data.damagedCharacter = owner;
         }
         return data; 

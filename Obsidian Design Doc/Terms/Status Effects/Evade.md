@@ -1,0 +1,1 @@
+For each stack, the affected automatically dodges the next attack that hits them.

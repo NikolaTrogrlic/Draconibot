@@ -13,6 +13,7 @@ import { FleeAction } from "./skills/general/FleeAction";
 import { Pyromancer } from "./jobs/Pyromancer";
 import { MenuHandler } from "./MenuHandler";
 import { CommandInteraction } from "discord.js";
+import { Tests } from "../tests";
 
 export class Player extends Combatant {
   constructor(name: string, id: string, createInteraction: CommandInteraction) {
@@ -33,7 +34,7 @@ export class Player extends Combatant {
     this.jobs = Jobs.getJobsForLevel(1);
     this.changeMainJob(JobName.Pyromancer);
 
-    this.setMaxLevelMainJob(JobName.Pyromancer);
+    Tests.setMaxLevelMainJob(this,JobName.Pyromancer);
 
     this.changeSubJob(JobName.Knight);
     this.burst = 0;
@@ -72,15 +73,6 @@ export class Player extends Combatant {
     }
 
     return this.stats;
-  }
-
-  setMaxLevelMainJob(job: JobName){
-    //FOR TESTING ONLY
-    let mainJob = this.jobs.find(x => x.name == job);
-    if(mainJob){
-      mainJob.level = 10;
-      this.changeMainJob(mainJob.name);
-    }
   }
 
   changeMainJob(selectedClass: JobName): string {

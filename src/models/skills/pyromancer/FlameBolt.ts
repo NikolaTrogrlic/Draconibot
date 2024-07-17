@@ -1,7 +1,6 @@
 
 import { Player } from "../../Player";
 import { Battle } from "../../battle/Battle";
-import { CombatMessage } from "../../battle/CombatMessage";
 import { Scorch } from "../../effects/Scorch";
 import { DamageModifier } from "../../enums/DamageModifier";
 import { ElementalType } from "../../enums/ElementalType";
@@ -39,7 +38,7 @@ export class FlameBolt extends Skill{
         let messageDisplayed = false;
         for(let combatant of this.getTarget(user,battle)){
             if(combatant.stats.HP > 0 && messageDisplayed == false){
-               battle.display.addMessage(new CombatMessage("\n**[SCORCH] Doublecast! Twin flames!**"));
+               battle.display.addMessage("\n**[SCORCH] Doublecast! Twin flames!**");
                messageDisplayed = true;
             }
             let result =  battle.dealDamageToCombatant(user,combatant,user.stats.magic * DamageModifier.Medium, ElementalType.Fire);

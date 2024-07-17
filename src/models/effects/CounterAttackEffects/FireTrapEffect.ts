@@ -10,7 +10,7 @@ export class FireTrapEffect extends CounterAttackEffect{
 
         if(data.damageElement == ElementalType.Physical && this.stacks > 0){
             let counterResult = battle.dealDamageToCombatant(data.damagedCharacter, data.attacker, data.damagedCharacter.stats.magic * DamageModifier.Weak, ElementalType.Fire);
-            data.combatMessage.message += `\n\n${data.attacker.nickname} **triggers a trap ♨️**\n${counterResult.combatMessage.message}`;
+            data.combatMessage += `\n\n${data.attacker.nickname} **triggers a trap ♨️**\n${counterResult.combatMessage}`;
             this.stacks--;
         }
         return data;

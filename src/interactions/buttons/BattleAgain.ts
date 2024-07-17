@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 import { Globals } from "../../globals";
 import { createMonsters, getLocationForLevel, getRandomEncounterMonsterCount } from "../../models/monsters/Monsters";
-import { ButtonType } from "../ButtonType";
+import { ButtonName } from "../ButtonName";
 import { ButtonBase } from "../base/ButtonBase";
 
 export class BattleAgain extends ButtonBase {
@@ -16,7 +16,7 @@ export class BattleAgain extends ButtonBase {
 
   static button(): ButtonBuilder {
     return new ButtonBuilder()
-      .setCustomId(ButtonType.BattleAgain)
+      .setCustomId(ButtonName.BattleAgain)
       .setLabel("Battle Again")
       .setStyle(ButtonStyle.Success);
   }

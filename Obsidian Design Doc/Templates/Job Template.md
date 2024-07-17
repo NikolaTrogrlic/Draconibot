@@ -1,34 +1,19 @@
 #JOB
 ## Basic Information
 
-**Unlock Condition:** 
-
-| STAT     | % MODIFIER |
-| -------- | ---------: |
-| HEALTH   |            |
-| STRENGTH |            |
-| MAGIC    |            |
-| SPEED    |            |
-| LUCK     |            |
+:LiKey: **Unlock Condition:** ?
+:LiHeart: **HEALTH** : +0%
+:LiBone: **STRENGTH** : +0%
+:LiBook: **MAGIC** : +0%
+:LiWind: **SPEED** : +0%
+:LiStars: **LUCK**  : +0%
 > The total stat modifiers must add up to 40%.
 
-## Skills
+## Skills **&** Passives
 
-| **Name** | **Description** | Cost | **LVL** |
-| :------: | :-------------: | :--: | :-----: |
-|          |                 |      |   01    |
-|          |                 |      |   02    |
-|          |                 |      |   03    |
-|          |                 |      |   04    |
-|          |                 |      |   05    |
-|          |                 |      |   06    |
-|          |                 |      |   07    |
-|          |                 |      |   08    |
-|          |                 |      |   09    |
-|          |                 |      |   10    |
-### Burst
 
-| **Name Here** |
-| ------------- |
-| Effect Here   |
+## Burst - **Powerful Move Here**
+
+### Does something
+⭐ Job Mastery: Also does something more.
 

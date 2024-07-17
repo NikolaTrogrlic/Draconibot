@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder } from "discord.js";
 import { Globals } from "../../globals";
-import { ButtonType } from "../ButtonType";
+import { ButtonName } from "../ButtonName";
 import { ButtonBase } from "../base/ButtonBase";
 import { AdventureButton } from "./AdventureButton";
 import { PlayCommand } from "../commands/PlayCommand";
@@ -22,7 +22,7 @@ export class ReturnToMenu extends ButtonBase{
 
    static button(): ButtonBuilder {
       return new ButtonBuilder()
-      .setCustomId(ButtonType.ReturnToMenu)
+      .setCustomId(ButtonName.ReturnToMenu)
       .setLabel('Return')
       .setStyle(ButtonStyle.Danger);
     }

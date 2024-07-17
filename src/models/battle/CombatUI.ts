@@ -5,7 +5,6 @@ import {
   ColorResolvable,
   EmbedBuilder,
 } from "discord.js";
-import { CombatMessage } from "./CombatMessage";
 import { Monster } from "../monsters/Monster";
 import { Player } from "../Player";
 import { MenuHandler } from "../MenuHandler";
@@ -18,11 +17,11 @@ export class CombatUI {
 
   UI: MenuHandler;
   title: string = "";
-  messages: CombatMessage[] = [];
+  messages: string[] = [];
   color: ColorResolvable = 0x884dff;
   location: string = "Battle.";
   maximumMessageCount = 6;
-  messageDisplayDuration: number = 1500;
+  messageDisplayDuration: number = 1250;
   isShowingMessagesOneByOne: boolean = false;
   isAnimatingFirstRow: boolean = false;
 
@@ -39,14 +38,14 @@ export class CombatUI {
     this.isAnimatingFirstRow = true;
   }
 
-  addMessage(...messages: CombatMessage[]) {
+  addMessage(...messages: string[]) {
     this.messages.push(...messages);
   }
 
-  clearScreenAndAddMessage(...messages: CombatMessage[]) {
+  clearScreenAndAddMessage(...messages: string[]) {
     if(this.messages.length < this.maximumMessageCount){
       for(let i = this.messages.length;i < this.maximumMessageCount;i++){
-        this.messages.push(new CombatMessage("\n"));
+        this.messages.push("\n");
       }
     }
     this.messages.push(...messages);
@@ -116,7 +115,7 @@ export class CombatUI {
         buttons.push(button);
     }
 
-    targetRow.addComponents(...buttons);
+    targetRow.addComponents(...buttons,ShowBattleStatus.button());
 
     return targetRow;
 }
@@ -126,11 +125,9 @@ export class CombatUI {
     this.clearDisplayData();
 
     this.title = `${player.nickname}'s turn`;
-    let bpMessage = "BP: " + this.getBPInformation(player);
-    this.addMessage(new CombatMessage(bpMessage),new CombatMessage(`Burst: **${player.burst}%**`));
+    this.addMessage("BP: " + this.getBPInformation(player),`Burst: **${player.burst}%**`);
     let embed = this.getTurnDisplay(monsters,players);
     let targetRow = this.getTargetingRow(monsters,targetedEnemyIndex);
-    targetRow.addComponents(ShowBattleStatus.button())
 
     const generalSkillsRow = new ActionRowBuilder<ButtonBuilder>();
     for (let skill of player.generalSkills) {
@@ -191,11 +188,11 @@ export class CombatUI {
     await this.UI.updateDisplay([embed], buttonRows);
   }
 
-  getTurnDisplay(monsters: Monster[], players: Player[], messages: CombatMessage[] = this.messages): EmbedBuilder {
+  getTurnDisplay(monsters: Monster[], players: Player[], messages: string[] = this.messages): EmbedBuilder {
     let description = "";
     for (let i = 0; i < this.maximumMessageCount; i++) {
       if (i < messages.length) {
-        description += messages[i].message + "\n";
+        description += messages[i] + "\n";
       } else {
         description += "\u200B\n";
       }

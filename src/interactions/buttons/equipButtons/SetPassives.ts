@@ -1,6 +1,6 @@
 import { ButtonInteraction, StringSelectMenuOptionBuilder, StringSelectMenuBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import { Globals } from "../../../globals";
-import { ButtonType } from "../../ButtonType";
+import { ButtonName } from "../../ButtonName";
 import { SelectMenuType } from "../../SelectMenuType";
 import { ButtonBase } from "../../base/ButtonBase";
 
@@ -63,7 +63,7 @@ export class SetPassives extends ButtonBase {
  
    static button(): ButtonBuilder {
      return new ButtonBuilder()
-       .setCustomId(ButtonType.SetPassives)
+       .setCustomId(ButtonName.SetPassives)
        .setLabel("Set Passives")
        .setStyle(ButtonStyle.Secondary);
    }

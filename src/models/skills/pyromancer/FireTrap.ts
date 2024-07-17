@@ -1,6 +1,5 @@
 import { Player } from "../../Player";
 import { Battle } from "../../battle/Battle";
-import { CombatMessage } from "../../battle/CombatMessage";
 import { FireTrapEffect } from "../../effects/CounterAttackEffects/FireTrapEffect";
 import { Scorch } from "../../effects/Scorch";
 import { PassiveName } from "../../enums/PassiveName";
@@ -23,7 +22,7 @@ export class FireTrap extends Skill{
        user.actions++;
 
        for(let combatant of targets){
-        battle.display.addMessage(new CombatMessage(`Places down magical traps. [+2 Fire Trap ♨️]`));
+        battle.display.addMessage(`Places down magical traps. [+2 Fire Trap ♨️]`);
         combatant.giveEffect(new FireTrapEffect());
 
          if(!scorchTriggered){
@@ -37,7 +36,7 @@ export class FireTrap extends Skill{
  
        if(scorchTriggered){
             for(let combatant of this.getTarget(user,battle)){
-                battle.display.addMessage(new CombatMessage(` [SCORCH] [+2 Fire Trap ♨️]`));
+                battle.display.addMessage(` [SCORCH] [+2 Fire Trap ♨️]`);
                 combatant.giveEffect(new FireTrapEffect());
             }
         }

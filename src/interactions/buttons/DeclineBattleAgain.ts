@@ -5,7 +5,7 @@ import {
    CacheType,
  } from "discord.js";
  import { Globals } from "../../globals";
-import { ButtonType } from "../ButtonType";
+import { ButtonName } from "../ButtonName";
 import { ButtonBase } from "../base/ButtonBase";
 import { PlayCommand } from "../commands/PlayCommand";
  
@@ -15,7 +15,7 @@ import { PlayCommand } from "../commands/PlayCommand";
 
    static button(): ButtonBuilder {
      return new ButtonBuilder()
-       .setCustomId(ButtonType.DeclineBattleAgain)
+       .setCustomId(ButtonName.DeclineBattleAgain)
        .setLabel("Stop Fighting")
        .setStyle(ButtonStyle.Danger);
    }

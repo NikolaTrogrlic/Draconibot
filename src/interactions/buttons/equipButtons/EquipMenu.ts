@@ -1,7 +1,7 @@
 import { ButtonInteraction, StringSelectMenuInteraction, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import { Globals } from "../../../globals";
 import { Player } from "../../../models/Player";
-import { ButtonType } from "../../ButtonType";
+import { ButtonName } from "../../ButtonName";
 import { ButtonBase } from "../../base/ButtonBase";
 import { ReturnToMenu } from "../ReturnToMenu";
 import { SetPassives } from "./SetPassives";
@@ -52,7 +52,7 @@ export class EquipMenu extends ButtonBase{
 
    static button(): ButtonBuilder {
       return new ButtonBuilder()
-      .setCustomId(ButtonType.EquipMenu)
+      .setCustomId(ButtonName.EquipMenu)
       .setLabel('Equip')
       .setStyle(ButtonStyle.Secondary);
     }

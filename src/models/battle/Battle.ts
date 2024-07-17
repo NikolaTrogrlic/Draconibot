@@ -7,11 +7,9 @@ import { Monster } from "../monsters/Monster";
 import { BattleAgain } from "../../interactions/buttons/BattleAgain";
 import { DeclineBattleAgain } from "../../interactions/buttons/DeclineBattleAgain";
 import { CombatUI } from "./CombatUI";
-import { CombatMessage } from "./CombatMessage";
 import { TakeDamageResult } from "./ActionResults";
 import { ElementalType } from "../enums/ElementalType";
 import { PassiveName } from "../enums/PassiveName";
-import { BurstAction } from "../skills/general/BurstAction";
 import { ResistUp } from "../effects/WhenHitEffects/ResistUp";
 import { TriggerWhenAllyHitEffect } from "../effects/OnAllyHitEffects/TriggerWhenAllyHitEffect";
 import { TriggerWhenHitEffect } from "../effects/WhenHitEffects/TriggerWhenHitEffect";
@@ -101,7 +99,7 @@ export class Battle {
         //Setup the initial display
         this.display.clearDisplayData();
         this.display.title = `Encounter !`;
-        this.display.addMessage(new CombatMessage(`- Enemies appear !`));
+        this.display.addMessage(`- Enemies appear !`);
         this.display.color = 0xFF0000;
         this.display.location = this.location;
         const battleUI = this.display.getTurnDisplay(this.monsters,this.players);
@@ -173,13 +171,13 @@ export class Battle {
         }
 
         if (this.monsters.length == 0) {
-            this.display.addMessage(new CombatMessage(`All enemies defeated.\n`));
+            this.display.addMessage(`All enemies defeated.\n`);
             this.battleLost = false;
             this.battleEnd();
             return;
         }
         else if (this.players.length == 0) {
-            this.display.addMessage(new CombatMessage(`Battle lost.`));
+            this.display.addMessage(`Battle lost.`);
             this.battleLost = true;
             this.battleEnd();
             return;
@@ -232,6 +230,7 @@ export class Battle {
     async showAndAnimateMessages(){
         if(this.display.isShowingMessagesOneByOne){
             for(let i = 0; i < this.display.messages.length; i++){
+                
                 let startIndex = Math.floor(i / this.display.maximumMessageCount) * this.display.maximumMessageCount;
                 let endIndex = startIndex + this.display.maximumMessageCount;
                 if(endIndex > i){
@@ -239,29 +238,17 @@ export class Battle {
                 }
 
                 let currentlyDisplayedMessages = this.display.messages.slice(startIndex, i + 1);
-                let lastAddedMessageIndex = currentlyDisplayedMessages.length - 1;
-                if(currentlyDisplayedMessages[lastAddedMessageIndex].keyFrames.length > 0){
-                    for(let frame of currentlyDisplayedMessages[lastAddedMessageIndex].keyFrames){
-                        let messagesToShow = currentlyDisplayedMessages;
-                        let delayBetweenMessages = delay(messagesToShow[lastAddedMessageIndex].frameDuration);
-                        messagesToShow[lastAddedMessageIndex].message = frame;
-                        this.display.getTurnDisplay(this.monsters,this.players, messagesToShow);
-                        
-                        let embed= this.display.getTurnDisplay(this.monsters,this.players, currentlyDisplayedMessages);
-                        await this.display.UI.updateDisplay([embed]);
-                        await delayBetweenMessages;
-                    }
-                }
-                else{
-                    let embed= this.display.getTurnDisplay(this.monsters,this.players, currentlyDisplayedMessages);
-                    await this.display.UI.updateDisplay([embed]);
-                    await delay(250);
-                }
+
+                let embed= this.display.getTurnDisplay(this.monsters,this.players, currentlyDisplayedMessages);
+                await this.display.UI.updateDisplay([embed]);
+                await delay(100);
             }
-            setTimeout(() => this.nextAction(), (this.display.messages.length * this.display.messageDisplayDuration));
+            let durationToWait = this.display.messages.length * this.display.messageDisplayDuration;
+            setTimeout(() => this.nextAction(), (durationToWait));
         }
         else{
             const embed= this.display.getTurnDisplay(this.monsters,this.players);
+
             await this.display.UI.updateDisplay([embed]);
             setTimeout(() => this.nextAction(), (this.display.messages.length * this.display.messageDisplayDuration));
         }
@@ -284,7 +271,7 @@ export class Battle {
             }
             player.stats.HP = player.stats.maxHP;
         }
-        this.display.addMessage(new CombatMessage(victoryMessage));
+        this.display.addMessage(victoryMessage);
         const battleAgainOptions = new ActionRowBuilder<ButtonBuilder>().addComponents(DeclineBattleAgain.button(), BattleAgain.button());
         const embed = this.display.getTurnDisplay(this.monsters,this.players);
         await this.display.UI.updateDisplay([embed], [battleAgainOptions]);
@@ -313,7 +300,7 @@ export class Battle {
         }
 
         if(result.evaded){
-            result.combatMessage.message = `\n - *${result.attacker.nickname} misses the attack !*`;
+            result.combatMessage = `\n - *${result.attacker.nickname} misses the attack !*`;
             result.damageTaken = 0;
             return result;
         }
@@ -345,19 +332,19 @@ export class Battle {
 
         if(result.damagedCharacter.stats.HP > 0){
             
-            result.combatMessage.message += `Deals **${result.damageTaken}** ${damageType} damage to ${result.damagedCharacter.nickname}.`;
+            result.combatMessage += `Deals **${result.damageTaken}** ${damageType} damage to ${result.damagedCharacter.nickname}.`;
             result.damagedCharacter.stats.HP -= result.damageTaken;
 
             if(result.weaknessWasHit){
-                result.combatMessage.message += `[${damageType} **WEAKNESS**]`;
+                result.combatMessage += `[${damageType} **WEAKNESS**]`;
             }
             else if(result.resistanceWasHit){
-                result.combatMessage.message += `[${damageType} **RESIST**]`;
+                result.combatMessage += `[${damageType} **RESIST**]`;
             }
             
             if(result.damagedCharacter.stats.HP <= 0 && result.damagedCharacter.isDefeated == false){
                 let message = `\n - *${result.damagedCharacter.nickname} defeated !*`;
-                result.combatMessage.message += message;
+                result.combatMessage += message;
                 result.wasDefeated = true;
                 result.damagedCharacter.isDefeated = true;
             }

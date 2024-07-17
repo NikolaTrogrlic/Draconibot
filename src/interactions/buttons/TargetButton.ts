@@ -8,13 +8,14 @@ export class TargetButton implements IGameInteraction{
    canOnlyPerformOutsideBattle: boolean = false;
    canOnlyPerformOnOwnTurn: boolean = true;
 
-   async execute(interaction: ButtonInteraction, globals: Globals, target: number): Promise<any> {
+   async execute(interaction: ButtonInteraction, globals: Globals, targetString: string): Promise<any> {
 
+      let target = Number(targetString);
       const player = globals.getPlayerById(interaction.user.id);
       const battle = globals.getPlayerBattle(player!);
       battle!.currentTarget = target;
 
       interaction.message.components.splice(0,1);
-      await interaction.update({fetchReply: false, components: [battle!.getTargetingRow(), ...interaction.message.components]});
+      await interaction.update({fetchReply: false, components: [battle!.display.getTargetingRow(battle!.monsters, battle!.currentTarget), ...interaction.message.components]});
    }
 }    
