@@ -58,6 +58,7 @@ export class PlayCommand extends CommandBase {
    .setTitle(`${player.nickname} | Info`)
    .setDescription(`
    **Character Level**: ${player.level}
+   **Exp**: ${player.exp}
    **Job**: *${player.mainJob.name}/${player.subJob.name}*
 
    --Characteristics--

@@ -100,14 +100,14 @@ export class PartyCommand extends CommandBase {
         break;
       }
       case PartyOptions.Leave:{
-         this.removeFromParty(interaction,globals,player!,player!.userID)
+         this.leaveFromParty(interaction,globals,player!)
         break;
       }
    }
   }
 
   createParty(interaction: any, globals: Globals, player: Player) {
-    if (player.partyID) {
+    if (player.party) {
       return interaction.editReply(
         "You are already in a party! Check party with /party info"
       );
@@ -119,14 +119,13 @@ export class PartyCommand extends CommandBase {
   }
 
   partyInfo(interaction: CommandInteraction, globals: Globals, player: Player) {
-    const party = globals.getPlayerParty(player);
-    if (party) {
+    if (player.party) {
       let fields = [];
 
       let hpTotal = 0;
       let maxHPTotal = 0;
 
-      for (const member of party.partyMembers) {
+      for (const member of player.party.partyMembers) {
         fields.push({
           name: bold(member.name),
           value: `HP: ${member.stats.HP}/${member.stats.maxHP} | Class: ${member.mainJob.name}`,
@@ -151,62 +150,104 @@ export class PartyCommand extends CommandBase {
 
       const embed = new EmbedBuilder()
         .setColor(color)
-        .setTitle(`${party?.partyLeader.name}'s party`)
-        .setDescription(`Members: ${party.partyMembers.length}/4`)
+        .setTitle(`${player.party?.partyLeader.name}'s party`)
+        .setDescription(`Members: ${player.party.partyMembers.length}/4`)
         .addFields(fields)
         .setTimestamp();
 
       interaction.editReply("Sending party info...");
       interaction.channel?.send({ embeds: [embed] });
+      
     } else {
       interaction.editReply("Must be in a party first!");
     }
   }
 
-  removeFromParty(
-    interaction: any,
+  async leaveFromParty(interaction: CommandInteraction, globals: Globals, player: Player)
+  {
+    if(player.party && !player.battleID){
+
+      if(player.party.partyLeader.userID != player.userID){
+        interaction.channel?.send(`${player.nickname} left ${player.party.partyLeader.nickname}'s party`);
+      }
+
+      var result = player.party.removeFromParty(player);
+
+      if(result){
+        interaction.editReply("Left the party...");
+      }
+      else{
+        interaction.editReply("Error occured while leaving party.");
+      }
+    }
+    else{
+      interaction.editReply("You must be in a party and out of combat to leave the party. If you are stuck leave the party with /leave");
+    }
+
+  }
+
+  async removeFromParty(
+    interaction: CommandInteraction,
     globals: Globals,
     player: Player,
     targetedUserId: string
-  ) {
-    const party = globals.parties.find((x) => x.id == player.partyID);
+  ){
+    if (player.party && !player.battleID) {
 
-    if (party) {
-      const playerToRemove = globals.getPlayerById(targetedUserId);
-      if (playerToRemove) {
-        const result = party.removeFromParty(playerToRemove, player.userID);
-        return interaction.editReply(result);
-      } else {
-        return interaction.editReply("User is not part of the party.");
+      if(player.party.partyLeader.userID == player.userID){
+
+        const playerToRemove = globals.getPlayerById(targetedUserId);
+
+        if (playerToRemove)
+        {
+          const result = player.party.removeFromParty(playerToRemove);
+  
+          if(result){
+            interaction.editReply("Kicked player.")
+            interaction.channel?.send(`${playerToRemove.nickname} was kicked from ${player.party.partyLeader}'s party`)
+          }
+          else{
+            interaction.editReply("Couldn't remove player from party.");
+          }
+  
+        }
+        else
+        {
+          interaction.editReply("User is not part of the party.");
+        }
+
       }
-    } else {
-      return interaction.editReply("You must be in a party first!");
+      else{
+        interaction.editReply("Must be party leader to kick people. Did you mean to leave? /party leave.");     
+      }
+    }
+    else
+    {
+       interaction.editReply("You must be in a party and out of combat to kick people. If you want to force leave a party use /leave!");
     }
   }
 
   addToParty(interaction: any, globals: Globals, player: Player) {
-    const party = globals.getPlayerParty(player);
-    if (party) {
+    if (player.party) {
       const targetedUser = interaction.options.getUser("target");
       if (targetedUser) {
         const partyMember = globals.getPlayerById(targetedUser.id);
-        if (partyMember && !partyMember.partyID) {
-          if (party.isBattling) {
+        if (partyMember && !partyMember.party) {
+          if (player.party.isBattling) {
             return "Can not perform this action while in battle!";
-          } else if (party.partyMembers.length >= 4) {
+          } else if (player.party.partyMembers.length >= 4) {
             return "Only 4 party members are allowed !";
           } else if (
-            party.partyMembers.findIndex(
+            player.party.partyMembers.findIndex(
               (x) => x.userID == targetedUser.userID
             ) == -1
           ) {
-            if (!party.partyLeader) {
+            if (!player.party.partyLeader) {
               return interaction.editReply(`No party leader in party.`);
             } else {
-              this.inviteToParty(party, partyMember, interaction, globals);
+              this.inviteToParty(player.party, partyMember, interaction, globals);
             }
           } else {
-            player.partyID = party.id;
             return interaction.editReply("Party member already in list!");
           }
         } else {

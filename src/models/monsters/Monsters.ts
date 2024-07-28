@@ -11,9 +11,6 @@ export function createPlainsMonster(): Monster {
   if (randomNumber < 5) {
     return new GoldenSlime();
   }
-  else if(randomNumber < 25){
-    return new RapidReptile();
-  }
   else {
     return new Slime();
   }
@@ -45,7 +42,6 @@ export function createMonsters(
 
   for (let i = 0; i < amountOfMonsters; i++) {
     switch (location) {
-      case CombatLocation.Desert:
       case CombatLocation.Plains:
         monsters.push(createPlainsMonster());
         break;

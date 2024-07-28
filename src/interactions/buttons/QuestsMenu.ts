@@ -4,6 +4,7 @@ import { ButtonName } from "../ButtonName";
 import { ButtonBase } from "../base/ButtonBase";
 import { AdventureButton } from "./AdventureButton";
 import { ReturnToMenu } from "./ReturnToMenu";
+import { SlimeExtermination } from "./quests/SlimeExtirmination";
 
 export class QuestsMenu extends ButtonBase{
 
@@ -20,14 +21,17 @@ export class QuestsMenu extends ButtonBase{
 
          let embed = new EmbedBuilder()
          .setTitle(`${player.nickname} | Quests`)
-         .setDescription(`**Adventure** - Set out on a series of battles resulting in experience gained at the end.\n**Hunt** - Battle a powerful monster. Power of the monster depends on difficulty. It is recommended to bring allies for higher difficulties.`)
+         .setDescription(`Select a quest`)
          .setColor(0x4974A5);
 
          let buttonList = new ActionRowBuilder<ButtonBuilder>()
          .addComponents(AdventureButton.button())
-         .addComponents(ReturnToMenu.button())
+         .addComponents(ReturnToMenu.button());
 
-         player.menu.updateDisplay([embed],[buttonList],interaction);
+         let questList = new ActionRowBuilder<ButtonBuilder>()
+         .addComponents(SlimeExtermination.button());
+
+         player.menu.updateDisplay([embed],[buttonList,questList],interaction);
       }
    }
 

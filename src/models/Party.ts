@@ -22,42 +22,34 @@ export class Party{
         }
 
         this.partyMembers.forEach(player => {
-            player.partyID = this.id;
+            player.party = this;
         });
     }
 
-    removeFromParty(player: Player, removerID: string | undefined){
-        if(removerID && this.partyLeader.userID !== removerID){
-            return "Must be party leader to remove from party";
-        }
+    getAverageLevel(): number{
+        let sum = 0;
+        this.partyMembers.forEach(x => sum += x.level)
+        return Math.round(sum / this.partyMembers.length);
+    }
 
-        if(this.partyLeader.battleID){
-            return "Can not kick people while in a battle or a battle thread.";
-        }
+    removeFromParty(player: Player): boolean{
 
         const removeIndex = this.partyMembers.findIndex(x => x.userID == player.userID);
-        if(removeIndex > -1){
-            let result = `Removed ${player.name} from party.`;
-            if(removerID && player.userID == removerID){
-                result = `${player.name} left the party.`;
-            }
-            this.partyMembers.splice(removeIndex,1)
-            player.partyID = undefined;
 
-            if(this.partyLeader.userID == player.partyID){
+        if(removeIndex > -1){
+           
+            this.partyMembers.splice(removeIndex,1)
+            player.party = undefined;
+
+            if(this.partyLeader.userID == player.userID){
                 if(this.partyMembers.length > 0){
                     this.partyLeader = this.partyMembers[0];
-                    result += ` Changed party leader to ${this.partyLeader.name}`;
-                }
-                else{
-                    result += `Party disbanded.`;
                 }
             }
 
-            return result;
+            return true;
         }
-        else{
-            return `Tried kicking ${player.name}, but they were not found in the party.`
-        }
+
+        return false;
     }
 }

@@ -1,9 +1,9 @@
 export class EffectBase{
 
-   //Basic Duration
    name: string;
    duration: number;
    maxDuration : number;
+   lastsInfinitely: boolean;
    stacks: number;
    maxStacks: number;
 
@@ -20,11 +20,12 @@ export class EffectBase{
       }
    }
 
-   constructor(name: string, duration: number, maxDuration: number, maxStacks: number, stacks: number = 1) {
+   constructor(name: string, duration: number, maxDuration: number, maxStacks: number, stacks: number = 1, lastsInfinitely: boolean = false) {
       this.name = name;
       this.duration = duration;
       this.maxDuration = maxDuration;
       this.stacks = stacks;
       this.maxStacks = maxStacks;
+      this.lastsInfinitely = lastsInfinitely;
    }
 }

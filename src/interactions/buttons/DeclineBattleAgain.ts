@@ -31,10 +31,9 @@ import { PlayCommand } from "../commands/PlayCommand";
        const previousBattle = globals.getPlayerBattle(player);
 
        if(previousBattle){
-         if(player.partyID){
-            const party = globals.getPlayerParty(player);
-            if(party){
-               for(let member of party.partyMembers){
+         if(player.party){
+            if(player.party){
+               for(let member of player.party.partyMembers){
                   member.battleID = undefined;
                }
             }

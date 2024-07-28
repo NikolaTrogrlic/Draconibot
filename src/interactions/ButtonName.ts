@@ -13,5 +13,10 @@ export enum ButtonName{
    EquipMenu = "EquipMenu",
    SetPassives = "SetPassives",
    ShowBattleStatus = "ShowBattleStatus",
-   ShowTurnDisplay = "ShowTurnDisplay"
+   ShowTurnDisplay = "ShowTurnDisplay",
+   Forward = "Forward",
+   Backward = "Backward",
+   Left = "Left",
+   Right = "Right",
+   SlimeExtermination="SlimeExtermination"
 }

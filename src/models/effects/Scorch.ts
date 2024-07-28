@@ -18,7 +18,7 @@ export class Scorch extends EffectBase{
         return false;
     }
 
-    constructor(stacks: number = 1,duration: number = 2) {
-        super("Scorch",duration,3,10,stacks);
+    constructor(stacks: number = 1) {
+        super("Scorch",2,3,10,stacks,true);
     }
 }

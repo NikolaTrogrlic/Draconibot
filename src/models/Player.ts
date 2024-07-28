@@ -14,6 +14,8 @@ import { Pyromancer } from "./jobs/Pyromancer";
 import { MenuHandler } from "./MenuHandler";
 import { CommandInteraction } from "discord.js";
 import { Tests } from "../tests";
+import { Quest } from "./quests/Quest";
+import { Party } from "./Party";
 
 export class Player extends Combatant {
   constructor(name: string, id: string, createInteraction: CommandInteraction) {
@@ -52,8 +54,10 @@ export class Player extends Combatant {
   maxBurst: number;
   generalSkills: Skill[] = [new AttackAction(), new DefendAction(),new FleeAction(), new BurstAction()];
   unlockedPassives: Passive[] = [];
-  partyID?: string;
   menu: MenuHandler;
+  isMoving: boolean = false;
+  party: Party | undefined;
+  quest: Quest | undefined;
   userID: string = "";
 
   updateStats(classModifiers: Stats) {
@@ -112,37 +116,7 @@ export class Player extends Combatant {
     }
   }
 
-  giveExp(battleLevel: number, creaturesFought: number, bonusExp: number = 0) {
-    let exp = 0;
-    let jobExp = 0;
-
-    if (creaturesFought > 4) {
-      creaturesFought = 4;
-    }
-
-    exp += bonusExp;
-
-    if (battleLevel - 2 <= this.level && this.level <= battleLevel + 2) {
-      exp += 5;
-      jobExp += 10;
-    } else if (this.level < battleLevel - 2) {
-      exp += 10;
-      jobExp += 15;
-    } else if (this.level > battleLevel + 2) {
-      if (this.level > battleLevel + 5) {
-        exp += 1;
-        if (creaturesFought > 1) {
-          creaturesFought = 1;
-        }
-        jobExp += 2;
-      } else {
-        exp += 5;
-        jobExp += 5;
-      }
-    }
-
-    exp *= creaturesFought;
-    jobExp *= creaturesFought;
+  giveExp(exp: number = 0, jobExp: number = 10) {
 
     this.exp += exp;
     this.mainJob.exp += jobExp;
@@ -158,7 +132,7 @@ export class Player extends Combatant {
     let result: string = "";
     let initialLevel = this.level;
 
-    while (this.exp > 100) {
+    while (this.exp >= 100) {
       this.level++;
       if(this.level <= 10){
         this.baseStats.HP += 50;

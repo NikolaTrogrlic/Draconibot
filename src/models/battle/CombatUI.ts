@@ -80,7 +80,12 @@ export class CombatUI {
       }
       display += `${combatantBP}\n`;
       for(let effect of combatant.effects){
-        display += `- [Duration: ${effect.duration}] ${effect.name} x${effect.stacks}\n`
+        if(effect.lastsInfinitely){
+          display += `- **${effect.name}** x${effect.stacks}\n`
+        }
+        else{
+          display += `- [Duration: ${effect.duration}] **${effect.name}** x${effect.stacks}\n`
+        }
       }
       display += `\n`;
     }

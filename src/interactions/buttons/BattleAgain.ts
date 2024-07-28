@@ -34,10 +34,9 @@ export class BattleAgain extends ButtonBase {
 
       if (previousBattle && previousBattle.battleInProgress == false) {
         let combatants = [];
-        if (player!.partyID) {
-          const party = globals.getPlayerParty(player!);
-          if (party) {
-            for (let partyMember of party.partyMembers) {
+        if (player!.party) {
+          if (player!.party) {
+            for (let partyMember of player!.party.partyMembers) {
               combatants.push(partyMember);
             }
           }

@@ -1,13 +1,20 @@
 
 ---
-- [ ] Make sure status effects can have infinite duration
-- [ ] Make BP not increase on turns after spending BP
-- [ ] Implement Dungeons
+- [x] Make sure status effects can have infinite duration
+- [x] Make BP not increase on turns after spending BP
+- [ ] Implement Quests 
+	- [x] Create base
+	- [ ] Make a function for drawing the map
+	- [ ] Leave dungeon button / area
+	- [ ] Other room types
+	- [ ] Implement Level 1-5 dungeons
+- [ ] Make EXP scale better
+	- [x]  Create exp file
+	- [ ]  Add calculations to code
 - [ ] Implement Achievements
 - [ ] Crystal Gem System
 - [ ] Potion System
 - [ ] Update Jobs
-	- [ ] Remove Cleric 
 	- [ ] Knight
 	- [ ] Pyromancer
 - [ ] Save System

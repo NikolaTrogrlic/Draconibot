@@ -27,6 +27,9 @@ import { SetPassives } from "./buttons/equipButtons/SetPassives";
 import { LeaveCommand } from "./commands/LeaveCommand";
 import { ShowBattleStatus } from "./buttons/ShowBattleStatus";
 import { ShowTurnDisplay } from "./buttons/ShowTurnDisplay";
+import { ForwardButton } from "./buttons/directionButtons/ForwardButton";
+import { BackwardButton } from "./buttons/directionButtons/BackwardButton";
+import { SlimeExtermination } from "./buttons/quests/SlimeExtirmination";
 
 export const menus: { [key: string]: SelectMenuBase} = {
    [SelectMenuType.SetMainJobMenu] : new MainJobSelect(),
@@ -56,7 +59,10 @@ export const buttons: {[key: string]: ButtonBase} = {
    [ButtonName.EquipMenu]: new EquipMenu(),
    [ButtonName.SetPassives]: new SetPassives(),
    [ButtonName.ShowBattleStatus]: new ShowBattleStatus(),
-   [ButtonName.ShowTurnDisplay]: new ShowTurnDisplay()
+   [ButtonName.ShowTurnDisplay]: new ShowTurnDisplay(),
+   [ButtonName.Forward]: new ForwardButton(),
+   [ButtonName.Backward]: new BackwardButton(),
+   [ButtonName.SlimeExtermination]: new SlimeExtermination()
 };
 
 export const targetButton = new TargetButton();

@@ -22,15 +22,15 @@ export class JoinParty extends ButtonBase{
               const party = globals.parties.find((x) => x.id == invite.partyID);
               if (party) {
       
-                if (party.isBattling || player.battleID) {
+                if (party.isBattling || player.battleID || party.partyLeader.quest || player.quest) {
                   const reply = await interaction.reply({
-                    content: "May not join a party in battle!",
+                    content: "May not join a party in battle or while in a quest",
                     ephemeral: true,
                   });
                   setTimeout(() => reply.delete(), 3000);
                 }
       
-                player.partyID = party.id;
+                player.party = party;
                 party.partyMembers.push(player);
                 globals.partyInvites.splice(globals.partyInvites.indexOf(invite), 1);
       

@@ -14,15 +14,6 @@ export class Globals{
         return this.players.find(x => x.userID == id);
     }
 
-    getPlayerParty(player: Player){
-        if(player.partyID){
-            return this.parties.find(x => x.id == player.partyID);
-        }
-        else{
-            return undefined;
-        }
-    }
-
     getPlayerBattle(player: Player){
         if(player.battleID){
             return this.battles.find(x => x.id == player.battleID)
@@ -31,8 +22,6 @@ export class Globals{
             return undefined;
         }
     }
-
-    
 
     removeStaleBattles(){
         const staleBattles = this.battles.filter(x => x.turnOrder.length == 0);

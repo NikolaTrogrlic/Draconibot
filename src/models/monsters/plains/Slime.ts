@@ -7,7 +7,7 @@ import { Monster } from "../Monster";
 export class Slime extends Monster{
 
    constructor(){
-      super("Slime", 2, new Stats({HP: 20, strength: 6, magic: 6, luck: 0, speed: 6}));
+      super("Slime", 2, new Stats({HP: 20, strength: 6, magic: 6, luck: 0, speed: 6}),10);
       this.weaknesses = [ElementalType.Fire]
    }
 

@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, InteractionResponse, Message, TextChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder } from "discord.js";
 import { average, createID, delay } from "../../utils";
 import { Combatant } from "../Combatant";
 import { Player } from "../Player";
@@ -16,6 +16,7 @@ import { TriggerWhenHitEffect } from "../effects/WhenHitEffects/TriggerWhenHitEf
 import { EffectBase } from "../effects/EffectBase";
 import { TriggerWhenAttackingEffect } from "../effects/OnAttackingEffects/TriggerWhenAttackingEffect";
 import { CounterAttackEffect } from "../effects/CounterAttackEffects/CounterAttackEffect";
+import { BattleNode } from "../quests/Nodes/BattleNode";
 
 export class Battle {
 
@@ -25,7 +26,8 @@ export class Battle {
     players: Player[] = [];
     round: number = 0;
     display: CombatUI;
-    bonusEXP: number = 0;
+    exp: number = 0;
+    jobExp: number = 0;
     combatLevel: number = 0;
     defeatedMonsterCount: number = 0;
     currentAction: Combatant | undefined;
@@ -50,6 +52,8 @@ export class Battle {
         this.turnOrder = [];
         this.monsters = [];
         this.players = [];
+        this.exp = 0;
+        this.jobExp = 0;
 
         this.turnOrder.push(...newCombatants);
         for (let combatant of this.turnOrder) {
@@ -58,6 +62,7 @@ export class Battle {
             combatant.stats.HP = combatant.stats.maxHP;
             combatant.isDefeated = false;
             combatant.effects = [];
+            combatant.lastBPround = 0;
             
             if(combatant instanceof Player){
                 combatant.burst = 0;
@@ -89,9 +94,9 @@ export class Battle {
         }
         if (this.players.length == 0) return;
 
+        
         this.defeatedMonsterCount = 0;
         this.round = 0;
-        this.bonusEXP = 0;
         this.combatLevel = this.getAverageMonsterLevel(this.monsters);
         this.location = location;
         this.battleInProgress = true;
@@ -124,7 +129,10 @@ export class Battle {
             else {
                 this.turnOrder[i].actions = 1;
             }
-            this.turnOrder[i].increaseBpBy(1);
+            //BP shouldnt recover on turns after spending BP.
+            if((this.turnOrder[i].lastBPround + 1 == this.round && this.round != 0) == false){
+                this.turnOrder[i].increaseBpBy(1);
+            }
             this.turnOrder[i].isDefending = false;
             this.turnOrder[i].isFleeing = false;
         }
@@ -148,9 +156,8 @@ export class Battle {
             }
             if(combatant.isFleeing == false){
                 this.defeatedMonsterCount++;
-                if (combatant.bonusEXP > 0 && (this.combatLevel + 4 > combatant.level && this.combatLevel - 4 < combatant.level)) {
-                    this.bonusEXP += combatant.bonusEXP;
-                }
+                this.jobExp += combatant.jobExp;
+                this.exp += combatant.exp;
             }
         }
         else if(combatant instanceof Player){
@@ -186,6 +193,7 @@ export class Battle {
         for (const combatant of this.turnOrder) {
             if (combatant.actions > 0) {
                 this.currentAction = combatant;
+                this.currentAction.tickStatus(1);
                 if (combatant instanceof Player) {
                     this.playerTurn(combatant);
                     return;
@@ -202,8 +210,6 @@ export class Battle {
     }
 
     async monsterTurn(monster: Monster) {
-
-       monster.tickStatus(1);
        monster.performCombatTurn(this);
        this.display.title = `${monster.nickname}'s turn.`;
        this.display.color = 16711680;
@@ -256,7 +262,6 @@ export class Battle {
 
     async playerTurn(player: Player) {
         this.currentTarget = 0;
-        player.tickStatus(1);
         await this.display.showPlayerTurn(player, this.players, this.monsters, this.currentTarget);
     }
 
@@ -267,14 +272,42 @@ export class Battle {
         let victoryMessage = " ";
         for (let player of this.players) {
             if (this.battleLost == false) {
-                victoryMessage += player.giveExp(this.combatLevel, this.defeatedMonsterCount, this.bonusEXP);
+                victoryMessage += player.giveExp(this.exp, this.jobExp);
             }
             player.stats.HP = player.stats.maxHP;
         }
         this.display.addMessage(victoryMessage);
-        const battleAgainOptions = new ActionRowBuilder<ButtonBuilder>().addComponents(DeclineBattleAgain.button(), BattleAgain.button());
-        const embed = this.display.getTurnDisplay(this.monsters,this.players);
-        await this.display.UI.updateDisplay([embed], [battleAgainOptions]);
+
+        let quest = this.players[0].quest;
+        if(quest){
+           if(this.battleLost){
+                quest.kickOutOfDungeon(this.players);
+           }
+           else{
+                if(quest.currentNode instanceof BattleNode){
+                    quest.currentNode.battleFinished = true;
+                    if(this.players[0].party){
+                        for(let partyMember of this.players[0].party.partyMembers){
+                            partyMember.battleID = undefined;
+                        }
+                    }
+                    else{
+                        this.players[0].battleID = undefined; 
+                    }
+
+                    const embed = this.display.getTurnDisplay(this.monsters,this.players);
+                    await this.display.UI.updateDisplay([embed]);
+
+                    await delay(2000);
+                    quest.currentNode.showNode(this.players[0], undefined);
+                }
+           }
+        }
+        else{
+            const battleAgainOptions = new ActionRowBuilder<ButtonBuilder>().addComponents(DeclineBattleAgain.button(), BattleAgain.button());
+            const embed = this.display.getTurnDisplay(this.monsters,this.players);
+            await this.display.UI.updateDisplay([embed], [battleAgainOptions]);
+        }
     }
 
     dealDamageToCombatant(attacker:Combatant, defender: Combatant, baseDamage: number, damageType: ElementalType = ElementalType.Physical): TakeDamageResult{

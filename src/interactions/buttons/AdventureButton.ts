@@ -21,14 +21,14 @@ export class AdventureButton extends ButtonBase{
 
       if(player?.menu){
          let location = getLocationForLevel(player.level);
-            if (player.partyID) {
-              const party = globals.getPlayerParty(player!);
-              if (party) {
+            if (player.party) {
+              if (player.party) {
                 const battle = new Battle(player,location,
-                  ...party.partyMembers,
-                  ...createMonsters(location, getRandomEncounterMonsterCount(party.partyMembers.length))
+                  ...player.party.partyMembers,
+                  ...createMonsters(location, getRandomEncounterMonsterCount(player.party.partyMembers.length))
                 );
                 globals.battles.push(battle);
+                player.party.isBattling = true;
               }
             } else {
               const battle = new Battle(

@@ -14,6 +14,9 @@ export abstract class Skill{
 
     use(user:Player, battle: Battle){
         user.bp -= this.bpCost;
+        if(this.bpCost > 0){
+            user.lastBPround = battle.round;
+        }
         user.burst += (this.bpCost * 10);
         if(user.burst > user.maxBurst){
             user.burst = user.maxBurst;

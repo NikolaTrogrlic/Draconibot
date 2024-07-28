@@ -9,12 +9,15 @@ import { DamageModifier as DamageModifier } from "../enums/DamageModifier";
 export abstract class Monster extends Combatant{
 
     level: number;
-    bonusEXP: number = 0;
+    exp: number;
+    jobExp: number;
 
-    constructor(name: string, level: number, stats:Stats){
+    constructor(name: string, level: number, stats:Stats, exp: number, jobExp: number = 5){
 
         super(name,stats, undefined)
         this.level = level;
+        this.exp = exp;
+        this.jobExp = jobExp;
     }
 
     abstract performCombatTurn(battle: Battle): void;

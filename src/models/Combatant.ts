@@ -17,6 +17,7 @@ export class Combatant{
     isFleeing: boolean;
     passives: Passive[] = [];
     isDefeated: boolean = false;
+    lastBPround: number = 0;
     effects: EffectBase[] = [];
     weaknesses: ElementalType[] = [];
     resistances: ElementalType[] = [];
@@ -54,7 +55,7 @@ export class Combatant{
     tickStatus(tickAmount: number){
         for(let i= this.effects.length-1;i >= 0;i--){
             this.effects[i].duration -= tickAmount;
-            if(this.effects[i].duration < 1){
+            if(this.effects[i].duration < 1 && this.effects[i].lastsInfinitely == false){
                 this.effects.splice(i,1);
             }
         }

@@ -10,7 +10,7 @@ export class LeaveCommand extends CommandBase {
     return new SlashCommandBuilder()
       .setName("leave")
       .setDescription(
-        "Forcefully leaves battle and party. 5 minute cooldown. Use when stuck."
+        "Forcefully leaves battle, party and quest. 5 minute cooldown. Use when stuck."
       );
   }
 
@@ -25,24 +25,26 @@ export class LeaveCommand extends CommandBase {
                player.isDefeated = true;
                player.isFleeing = true;
                battle.nextAction();
-               if(player.partyID){
-                  let party = globals.getPlayerParty(player);
-                  if(party){
-                     const removeIndex = party.partyMembers.findIndex(x => x.userID == player.userID);
-                     if(removeIndex > -1){
-                        party.partyMembers.splice(removeIndex,1)
-                        player.partyID = undefined;
+               const party = player.party;
+               if(party){
+                const removeIndex = party.partyMembers.findIndex(x => x.userID == player.userID);
+                if(removeIndex > -1){
+                   party.partyMembers.splice(removeIndex,1)
+                   player.party = undefined;
 
-                        if(party.partyLeader.userID == player.userID){
-                            if(party.partyMembers.length > 0){
-                              party.partyLeader = party.partyMembers[0];
-                            }
-                        }
-                    }
-                  }
+                   if(party.partyLeader.userID == player.userID){
+                       if(party.partyMembers.length > 0){
+                         party.partyLeader = party.partyMembers[0];
+                       }
+                   }
+                }
                }
 
-               await interaction.reply(`${player.nickname} forcefully left combat.`);
+               if(player.quest){
+                player.quest = undefined;
+               }
+
+               await interaction.reply(`${player.nickname} forcefully left combat/quest.`);
             }
          }
       }

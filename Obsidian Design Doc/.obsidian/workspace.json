@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "TODOS.md",
+                "file": "Terms/Status Effects/Scorch.md",
                 "mode": "source",
                 "source": false
               }
@@ -22,16 +22,31 @@
           {
             "id": "e3b9978b1ac35257",
             "type": "leaf",
+            "pinned": true,
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Terms/Bullet.md",
+                "file": "TODOS.md",
+                "mode": "source",
+                "source": false
+              },
+              "pinned": true
+            }
+          },
+          {
+            "id": "688239e06f86fdc4",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "TODOS.md",
                 "mode": "source",
                 "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 2
       },
       {
         "id": "eafd4a9861117933",
@@ -177,18 +192,20 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "d52392ef8649738e",
+  "active": "688239e06f86fdc4",
   "lastOpenFiles": [
+    "Quests.md",
+    "TODOS.md",
+    "Terms/Bullet.md",
+    "Terms/Status Effects/Scorch.md",
     "Jobs/Apothecary.md",
     "Jobs/Musician.md",
     "Jobs/Spellblade.md",
     "Jobs/Pyromancer.md",
     "Jobs/Gunslinger.md",
     "Jobs/Knight.md",
-    "Terms/Bullet.md",
     "Terms/Status Effects/Tension.md",
     "Terms/Status Effects/Evade.md",
-    "Terms/Status Effects/Scorch.md",
     "Templates/Job Template.md",
     "Terms/Status Effects/Defense Up.md",
     "Terms/Trap.md",
@@ -202,9 +219,7 @@
     "Jobs/Chef.md",
     "2024-07-02.md",
     "Terms/Damage Modifiers/MASSIVE.md",
-    "TODOS.md",
     "Terms/Status Effects/Bleed.md",
-    "Terms/Status Effects/Ricocheting Shots.md",
     "Terms/Trap",
     "Terms/Damage Modifiers",
     "Terms",

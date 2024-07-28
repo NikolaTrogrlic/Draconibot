@@ -76,7 +76,7 @@ export async function canPerformInteraction(
      else {
        if (interaction.isRepliable()) {
          await interaction.reply({
-           content: "Please start the game first using /start",
+           content: "Please start the game first using /play",
            ephemeral: true,
          });
        }
