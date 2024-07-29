@@ -15,6 +15,7 @@ export class Combatant{
     battleID?: string;
     isDefending: boolean;
     isFleeing: boolean;
+    lastHitRound: number;
     passives: Passive[] = [];
     isDefeated: boolean = false;
     lastBPround: number = 0;
@@ -35,6 +36,7 @@ export class Combatant{
         this.isFleeing = false;
         this.isDefending = false;
         this.nickname = name;
+        this.lastHitRound = -1;
     }
 
     increaseBpBy(amount: number){

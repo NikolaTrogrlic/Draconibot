@@ -15,7 +15,6 @@ import { TargetButton } from "./buttons/TargetButton";
 import { SkillButton } from "./buttons/SkillButton";
 import { PlayCommand } from "./commands/PlayCommand";
 import { QuestsMenu } from "./buttons/QuestsMenu";
-import { AdventureButton } from "./buttons/AdventureButton";
 import { ReturnToMenu } from "./buttons/ReturnToMenu";
 import { JobsMenu } from "./buttons/jobButtons/JobsMenu";
 import { SetJob } from "./buttons/jobButtons/SetJob";
@@ -50,7 +49,6 @@ export const buttons: {[key: string]: ButtonBase} = {
    [ButtonName.DeclineParty]: new DeclineParty(),
    [ButtonName.JoinParty]: new JoinParty(),
    [ButtonName.QuestsMenu]: new QuestsMenu(),
-   [ButtonName.Adventure]: new AdventureButton(),
    [ButtonName.ReturnToMenu]: new ReturnToMenu(),
    [ButtonName.JobsMenu]: new JobsMenu(),
    [ButtonName.SetJob]: new SetJob(),

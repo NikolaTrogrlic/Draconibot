@@ -2,7 +2,6 @@ import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedB
 import { Globals } from "../../globals";
 import { ButtonName } from "../ButtonName";
 import { ButtonBase } from "../base/ButtonBase";
-import { AdventureButton } from "./AdventureButton";
 import { PlayCommand } from "../commands/PlayCommand";
 
 export class ReturnToMenu extends ButtonBase{

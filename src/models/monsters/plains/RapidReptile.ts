@@ -8,7 +8,7 @@ import { Monster } from "../Monster";
 export class RapidReptile extends Monster{
 
    constructor(){
-      super("Rapid Reptile", 4, new Stats({HP: 15, strength: 10, magic: 6, luck: 30, speed: 6}),20);
+      super("Rapid Reptile", 4, new Stats({HP: 30, strength: 10, magic: 6, luck: 30, speed: 6}),30);
       this.weaknesses = [ElementalType.Fire, ElementalType.Lightning]
       this.resistances = [ElementalType.Water]
    }

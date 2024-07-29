@@ -2,7 +2,6 @@ import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedB
 import { Globals } from "../../globals";
 import { ButtonName } from "../ButtonName";
 import { ButtonBase } from "../base/ButtonBase";
-import { AdventureButton } from "./AdventureButton";
 import { ReturnToMenu } from "./ReturnToMenu";
 import { SlimeExtermination } from "./quests/SlimeExtirmination";
 
@@ -25,7 +24,6 @@ export class QuestsMenu extends ButtonBase{
          .setColor(0x4974A5);
 
          let buttonList = new ActionRowBuilder<ButtonBuilder>()
-         .addComponents(AdventureButton.button())
          .addComponents(ReturnToMenu.button());
 
          let questList = new ActionRowBuilder<ButtonBuilder>()

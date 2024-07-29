@@ -6,9 +6,13 @@ import { ReturnToMenu } from "../../../interactions/buttons/ReturnToMenu";
 
 export class EndNode extends QuestNode{
     
+    exp: number;
+    jobexp: number;
 
-    constructor(){
+    constructor(exp:number, jobexp: number){
         super(QuestNodeType.Completion)
+        this.exp = exp;
+        this.jobexp = jobexp;
     }
 
     async showNode(player: Player, globals: Globals | undefined): Promise<any> {
@@ -17,17 +21,15 @@ export class EndNode extends QuestNode{
 
             let expMessage = " ";
 
-            let expToGive = player.quest!.recommendedLevel * 100;
-
             if(player.party){
                 for(let partyMember of player.party.partyMembers){
-                    expMessage += partyMember.giveExp(expToGive) + "\n";
+                    expMessage += partyMember.giveExp(this.exp, this.jobexp) + "\n";
 
                     partyMember.quest = undefined;
                 }
             }
             else{
-                expMessage = player.giveExp(expToGive);
+                expMessage = player.giveExp(this.exp,this.jobexp);
                 player.quest = undefined;
             }
 

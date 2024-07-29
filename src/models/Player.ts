@@ -36,7 +36,7 @@ export class Player extends Combatant {
     this.jobs = Jobs.getJobsForLevel(1);
     this.changeMainJob(JobName.Pyromancer);
 
-    Tests.setMaxLevelMainJob(this,JobName.Pyromancer);
+    //Tests.setMaxLevelMainJob(this,JobName.Pyromancer);
 
     this.changeSubJob(JobName.Knight);
     this.burst = 0;
@@ -46,6 +46,7 @@ export class Player extends Combatant {
 
   level: number = 1;
   exp: number = 0;
+  requiredExpForLevel: number = 100;
   lastLeaveCommandUse: Date = new Date();
   mainJob: Job = new Knight();
   subJob: Job = new Pyromancer();
@@ -127,34 +128,66 @@ export class Player extends Combatant {
     return expGivenTxt + levelUpTxt;
   }
 
+  getExpScalingCoeficient(level: number): number{
+    if(level <= 5){
+      return 0.4;
+    }
+    else if(level <= 15){
+      return 0.3;
+    }
+    else if(level <= 25){
+      return 0.2;
+    }
+    else if(level <= 44){
+      return 0.1;
+    }
+    else{
+      return 0.2;
+    }
+  }
+
   checkLevelUp(): string {
     let leveledUp = false;
     let result: string = "";
     let initialLevel = this.level;
 
-    while (this.exp >= 100) {
+    while (this.exp >= this.requiredExpForLevel) {
       this.level++;
+      leveledUp = true;
+
       if(this.level <= 10){
+        this.baseStats.HP += 20;
+        this.baseStats.strength += 2;
+        this.baseStats.magic += 2;
+      }
+      else if(this.level <= 20){
         this.baseStats.HP += 50;
-        this.baseStats.strength += 5;
-        this.baseStats.magic += 5;
+        this.baseStats.strength += 6;
+        this.baseStats.magic += 4;
       }
-      else if(this.level <= 25){
+      else if(this.level <= 30){
+        this.baseStats.HP += 80;
+        this.baseStats.strength += 4;
+        this.baseStats.magic += 6;
+      }
+      else if(this.level < 45){
         this.baseStats.HP += 100;
-        this.baseStats.strength += 8;
-        this.baseStats.magic += 8;
-      }
-      else{
-        this.baseStats.HP += 150;
         this.baseStats.strength += 10;
         this.baseStats.magic += 10;
+      }
+      else{
+        this.baseStats.HP += 300;
+        this.baseStats.strength += 20;
+        this.baseStats.magic += 20;
       }
       this.baseStats.speed += (1 * Math.ceil(this.level/10));
       if (this.level % 2 == 0) {
         this.baseStats.luck++;
       }
-      this.exp -= 100;
-      leveledUp = true;
+
+      this.exp -= this.requiredExpForLevel;
+      this.requiredExpForLevel =  Math.ceil(5 * Math.ceil( (Math.ceil( this.requiredExpForLevel * this.getExpScalingCoeficient(this.level)) + this.requiredExpForLevel )/ 5));
+
       this.updateStats(this.mainJob.statModifiers);
     }
 

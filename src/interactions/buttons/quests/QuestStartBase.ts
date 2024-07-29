@@ -55,12 +55,12 @@ export abstract class QuestStartBase extends ButtonBase{
 
                let embed = new EmbedBuilder()
                .setTitle(`Quests - ${quest.name}`)
-               .setDescription("Starting quest...")
+               .setDescription(`**Recommended Level** ${quest.recommendedLevel}\n**Minimum Level** ${quest.minimumLevel}\n${quest.description}\n\n Starting quest...`)
                .setColor(0x4974A5);
 
                await player.menu.updateDisplay([embed]);
 
-               await delay(2000);
+               await delay(5000);
 
                quest.currentNode.showNode(player, globals);
             }

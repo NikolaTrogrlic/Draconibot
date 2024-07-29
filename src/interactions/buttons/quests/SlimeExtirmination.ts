@@ -13,18 +13,18 @@ export class SlimeExtermination extends QuestStartBase{
         var questLayout = new BattleNode(CombatLocation.Plains, "It seems this area is free of slimes.");
 
         questLayout.setForward(
-                new BattleNode(CombatLocation.Plains, "It seems this area is free of slimes.")
+                new BattleNode(CombatLocation.Plains, "All slimes have been cleared.")
         ).setForward(
-                new EndNode()
+                new EndNode(150, 20)
         );
         
-        return new Quest("Slime Extermination", 1, 2, questLayout);
+        return new Quest("Slime Extermination","**Objective:** Defeat all the slimes!\n\nAfter an accident involving a giant wedding cake slimes have started multiplying like crazy.\nPrevent them from spreading even more!" , 1, 2, questLayout);
     }
 
     static button(): ButtonBuilder {
         return new ButtonBuilder()
         .setCustomId(ButtonName.SlimeExtermination)
-        .setLabel("(LVL 01) Slime Extermination")
+        .setLabel("Slime Extermination")
         .setStyle(ButtonStyle.Secondary);
      }
 }

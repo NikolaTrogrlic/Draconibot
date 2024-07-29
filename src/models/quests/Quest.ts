@@ -8,11 +8,13 @@ export class Quest{
     minimumLevel: number;
     recommendedLevel: number;
     recommendedCharacters: number = 1;
+    description: string;
     currentNode: QuestNode;
 
-    constructor(name: string, minLevel: number, recLevel: number, startNode: QuestNode){
+    constructor(name: string,description: string, minLevel: number, recLevel: number, startNode: QuestNode){
         this.name = name;
         this.minimumLevel = minLevel;
+        this.description = description;
         this.recommendedLevel = recLevel;
         this.currentNode = startNode;
     }

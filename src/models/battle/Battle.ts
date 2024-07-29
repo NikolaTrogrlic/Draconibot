@@ -63,6 +63,7 @@ export class Battle {
             combatant.isDefeated = false;
             combatant.effects = [];
             combatant.lastBPround = 0;
+            combatant.lastHitRound = -1;
             
             if(combatant instanceof Player){
                 combatant.burst = 0;
@@ -192,8 +193,19 @@ export class Battle {
 
         for (const combatant of this.turnOrder) {
             if (combatant.actions > 0) {
+
                 this.currentAction = combatant;
+                let wasStunned = combatant.effects.findIndex(x => x.name == "Stunned") != -1;
                 this.currentAction.tickStatus(1);
+
+                if(wasStunned){
+                    this.display.addMessage(`${combatant.nickname} was stunned and skipped a turn.\n`);
+                    this.display.title = `${combatant.nickname}'s turn.`;
+                    this.currentAction.actions = 0;
+                    this.showAndAnimateMessages();
+                    return;
+                }
+
                 if (combatant instanceof Player) {
                     this.playerTurn(combatant);
                     return;
@@ -367,6 +379,8 @@ export class Battle {
             
             result.combatMessage += `Deals **${result.damageTaken}** ${damageType} damage to ${result.damagedCharacter.nickname}.`;
             result.damagedCharacter.stats.HP -= result.damageTaken;
+
+            result.damagedCharacter.lastHitRound = this.round;
 
             if(result.weaknessWasHit){
                 result.combatMessage += `[${damageType} **WEAKNESS**]`;
